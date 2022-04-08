@@ -1,0 +1,1713 @@
+<html>
+<style>
+body {
+	background-color:102510;
+	color:eeffbb;
+	font-family:Verdana;
+	font-size:14px;
+}
+input, select {
+	background-color:cceecc;
+	color:153310;
+}
+table {
+	background-color:305030;
+	font-family:Verdana;
+	font-size:13px;
+}
+button {
+	background-color:cceecc;
+}
+.tit1 {
+	color:eeffbb;
+	text-align:center;
+	font-size:35px;
+	font-weight:bold;
+	font-style:italic;
+}
+.tit2 {
+	color:eeffbb;
+	text-align:center;
+	font-size:25px;
+	font-weight:bold;
+}
+.tb1 {
+	display:table;
+	font-family:Verdana;
+	border: 2px solid;
+	border-color:aaaaaa;
+}
+.tbr {
+	display:table;
+	font-family:Verdana;
+	border: 0;
+}
+.c1 {
+	vertical-align:super;
+}
+.tl0 {
+	background-color:eeeeee;
+	color:305030;
+	font-size:16px;
+}
+.tl1 {
+	//background-color:305050;
+	background-color:226633;
+	color:bbeeaa;
+}
+.tl2 {
+	//background-color:303050;
+	background-color:225544;
+	color:bbeeaa;
+}
+.tlc {
+	background-color:eeeeaa;
+	color:ff4433;
+}
+.tlt {
+	background-color:404050;
+}
+.ttt {
+	background-color:445544;
+}
+.tlv {
+	background-color:aaccbb;
+	color:305030;
+}
+.mvenda {
+	background-color:ddeeff;
+	color:337755;
+	font-size:16px;
+}
+.limpar1 {
+	background-color:ddeeff;
+	color:337755;
+	font-size:12px;
+}
+.limpar2 {
+	background-color:eeeeff;
+	color:337755;
+	font-size:12px;
+}
+.limpar3 {
+	background-color:ddddff;
+	color:337755;
+	font-size:12px;
+}
+.limpar4 {
+	background-color:ccccff;
+	color:337744;
+	font-size:12px;
+}
+.lpar1 {
+	background-color:ddffee;
+	color:557733;
+	font-size:12px;
+}
+.lpar2 {
+	background-color:eeffee;
+	color:557733;
+	font-size:12px;
+}
+.lpar3 {
+	background-color:ddffdd;
+	color:557733;
+	font-size:12px;
+}
+.lpar4 {
+	background-color:ccffcc;
+	color:447733;
+	font-size:12px;
+}
+.relat {
+	margin-left: auto;
+	margin-right: auto;
+	width:340px;
+	max-height:500px;
+	overflow:hidden;
+	background-color:#eeeeee;
+	color:#333333;
+}
+.inifim {
+	color:ff0000;
+	font-size:14px;
+	font-weight:bold;
+}
+.abs {
+	background-color:#224422;
+	font-size:10px;
+}
+.abd {
+	background-color:#224422;
+	font-size:10px;
+}
+.area1 {
+	position:absolute;
+	left:200px;
+	top:175px;
+	visibility:hidden;
+}
+.area2 {
+	position:absolute;
+	left:920px;
+	top:175px;
+	visibility:hidden;
+}
+.area3 {
+	position:absolute;
+	left:200px;
+	top:380px;
+	visibility:hidden;
+}
+.opad {
+	visibility:visible;
+}
+
+</style>
+<script>
+function separa(reg,divc) {
+	inireg = reg.indexOf("("+divc+" ")+divc.length+2;
+	fimreg = reg.indexOf(" "+divc+")")-inireg;
+	return reg.substr(inireg,fimreg);
+}
+function ci(a,b) {
+	xx = a.value;
+	if (xx != "") {
+		xx = parseInt(a.value);
+		if (isNaN(xx)) {
+			a.value = "";
+		}
+		i = fx.iqt.value;
+		m = fx.mqt.value;
+		g = fx.gqt.value;
+		if (i == "") i = 0;
+		if (m == "") m = 0;
+		if (g == "") g = 0;
+		//valx = "R$"+fx.iqt.value * <!--?php echo $valint; ?--> *100;
+		vv = fx.iqt.value * valintx *100
+		if (vv > 0) {
+			valx = "R$"+vv;
+			valt = valx.length;
+			valorx = valx.substring(valt-2,0)+","+valx.substring(valt-2);
+			document.getElementById("vli").innerHTML = valorx;
+		} else {
+			document.getElementById("vli").innerHTML = "--";
+		}
+		//valx = "R$"+fx.mqt.value * <!--?php echo $valmeia; ?--> *100;
+		vv = fx.mqt.value * valmeiax *100
+		if (vv > 0) {
+			valx = "R$"+vv;
+			valt = valx.length;
+			valorx = valx.substring(valt-2,0)+","+valx.substring(valt-2);
+			document.getElementById("vlm").innerHTML = valorx;
+		} else {
+			document.getElementById("vlm").innerHTML = "--";
+		}
+		//valx = "R$"+((fx.iqt.value * <!--?php echo $valint; ?--> *100)+(fx.mqt.value * <?php echo $valmeia; ?> *100));
+		valx = "R$"+((fx.iqt.value * valintx *100)+(fx.mqt.value * valmeiax *100));
+		valt = valx.length;
+		valorx = valx.substring(valt-2,0)+","+valx.substring(valt-2);
+		document.getElementById("vti").innerHTML = valorx;
+		fx.numi.value = parseInt(i) + parseInt(m) + parseInt(g);
+		document.getElementById("numing").innerHTML = parseInt(i) + parseInt(m) + parseInt(g);
+	}
+	return false;
+}
+function mostra(a){
+	detvenda = "<table width=100%>" + a.innerHTML + "</table>";
+	document.getElementById("tvenda").style.visibility = "visible";
+	document.getElementById("tabrel").style.visibility = "hidden";
+	cancx = "<button onClick=\"return cancelar();\">Cancelar a Venda</button>";
+	document.getElementById("venda").innerHTML = detvenda;
+	if (detvenda.indexOf("Cancelado") == -1) {
+		document.getElementById("cancelando").innerHTML = cancx;
+	} else {
+		document.getElementById("cancelando").innerHTML = "";
+	}
+	return false;
+}
+function fmostra(){
+	document.getElementById("tvenda").style.visibility = "hidden";
+	document.getElementById("tabrel").style.visibility = "visible";
+	document.getElementById("cancela").style.visibility = "visible";
+	return false;
+}
+function cancelar() {
+	document.getElementById("cancelando").innerHTML = "";
+	n = fm.n.value;
+	a = parseInt(fm.i.value);
+	b = parseInt(fm.m.value);
+	c = parseInt(fm.g.value);
+	canx = document.getElementById("regdia").innerHTML;
+	canx = canx.replace(n,"Cancelado "+n);
+	document.getElementById("regdia").innerHTML = canx;
+	canx = document.getElementById("tvenda").innerHTML;
+	canx = canx.replace(n,"Cancelado "+n);
+	fx.tint.value = parseInt(fx.tint.value) - a;
+	fx.tmeia.value = parseInt(fx.tmeia.value) - b;
+	fx.tgrat.value = parseInt(fx.tgrat.value) - c;
+	fx.total.value = parseInt(fx.total.value) - a - b - c;
+	document.getElementById("toti").innerHTML = fx.tint.value;
+	document.getElementById("totm").innerHTML = fx.tmeia.value;
+	document.getElementById("totg").innerHTML = fx.tgrat.value;
+	document.getElementById("tot").innerHTML = fx.total.value;
+	document.getElementById("tvenda").innerHTML = canx;
+	fx.iqt.focus();
+	numc = n.substr(2);
+	env = "acao=C&numero="+numc;
+	result = new XMLHttpRequest();
+	result.open("POST","museu-registros.php",false);
+	result.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	result.send(env);
+	al = result.responseText;
+	return false;
+}
+function novavenda(){
+	fx.iqt.value = "";
+	fx.mqt.value = "";
+	fx.gqt.value = "";
+	fx.numi.value = "";
+	document.getElementById("numing").innerHTML = "--";
+	document.getElementById("vli").innerHTML = "--";
+	document.getElementById("vlm").innerHTML = "--";
+	document.getElementById("vti").innerHTML = "--";
+	fx.iqt.focus();
+	return false;
+}
+function rxa(){
+	taminv = inv.length;
+	ind = taminv-1;
+	totiant = totmant = totgant = 0;
+	hojex = separa(hojed,"d")
+	while (hojex == separa(inv[ind],"d")) ind = ind-1;
+	indini = ind = ind+1;
+	while (ind < taminv) {
+		i = separa(inv[ind],"i");
+		m = separa(inv[ind],"m");
+		g = separa(inv[ind],"g");
+		horax = separa(inv[ind],"h");
+		th = horax.length-3;
+		horax = horax.substr(0,th);
+		horax = horax.replace(":","h");
+		if (m < 10) horax = horax.replace("h","h0");
+		lindia = lindia + 1;
+		if (clreg == 1) {
+			ri = "limpar1";
+			rm = "limpar2";
+			rg = "limpar3";
+			rt = "limpar4";
+			clreg = 2;
+		} else {
+			ri = "lpar1";
+			rm = "lpar2";
+			rg = "lpar3";
+			rt = "lpar4";
+			clreg = 1;
+		}
+		ning = ning + 1;
+		ttingi = ttingm = 0;
+		tx = "<table width=100% onClick=\"mostra(this);\" border=0><tr class='"+rt+"'><td colspan=2><b>--- "+horax+" --- </b></td><td align='right'><font color='333377'><i><b>N-"+ning+"</b></i></font></td></tr>";
+		if (i != 0) {
+			ttingi = valintx*parseInt(i);
+			tx = tx + "<tr class='"+ri+"'><td>- Inteira:</td><td>" + i + " ingresso(s).</td>";
+			tx = tx + "<td>- Valor: " + ttingi.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2}) + ".</td>";
+			lindia = lindia + 1;
+		}
+		if (m != 0) {
+			ttingm = valmeiax*parseInt(m);
+			tx = tx + "<tr class='"+rm+"'><td>- Meia:</td><td>" + m + " ingresso(s).</td>";
+			tx = tx + "<td>- Valor: " + ttingm.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2}) + ".</td>";
+			lindia = lindia + 1;
+		}
+		if (g != 0) {
+			tx = tx + "<tr class='"+rg+"'><td>- Gratuita:</td><td>" + g + " ingresso(s).</td>";
+			tx = tx + "<td>----</td>";
+			lindia = lindia + 1;
+		}
+		ttning = parseInt(i)+parseInt(m)+parseInt(g);
+		ttingv = ttingi+ttingm;
+		tx = tx + "<tr class='"+rt+"'><td><b>- Total:</b> </td><td><b>" + ttning + " ingresso(s).</b></td>";
+		tx = tx + "<td><b>Valor Total: " + ttingv.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2}) + ".</b></td>";
+		tx = tx + "<input type='hidden' name='n' value='N-"+ning+"'>";
+		tx = tx + "<input type='hidden' name='i' value="+i+">";
+		tx = tx + "<input type='hidden' name='m' value="+m+">";
+		tx = tx + "<input type='hidden' name='g' value="+g+">";
+		tx = tx + "</td></tr></table>";
+		lindia = lindia + 1;
+		if (lindia > 22) {
+			if (lindia < 100) {
+				gr();
+				lindia = 200;
+				document.getElementById("regdia").innerHTML = "<span class='inifim'>**Início**</span>" + document.getElementById("regdia").innerHTML;
+			}
+		} else if (lindia > 0) {
+			document.getElementById("nada").innerHTML = "";
+		}
+		totiant = totiant+parseInt(i);
+		totmant = totmant+parseInt(m);
+		totgant = totgant+parseInt(g);
+		tirafim = document.getElementById("regdia").innerHTML;
+		tirafim = tirafim.replace("**Fim**","");
+		document.getElementById("regdia").innerHTML = tirafim;
+		document.getElementById("regdia").innerHTML = document.getElementById("regdia").innerHTML + tx + fimrel;
+		document.getElementById("regdia").scrollTop = document.getElementById("regdia").scrollHeight;
+		ind = ind+1;
+	}
+	fx.tint.value = document.getElementById("toti").innerHTML = totiant;
+	fx.tmeia.value = document.getElementById("totm").innerHTML = totmant;
+	fx.tgrat.value = document.getElementById("totg").innerHTML = totgant;
+	document.getElementById("tot").innerHTML = fx.total.value = totiant+totmant+totgant;
+	document.getElementById("vli").innerHTML = "--";
+	document.getElementById("vlm").innerHTML = "--";
+	document.getElementById("vti").innerHTML = "--";
+	return false;
+}
+function rx() {
+	ci(fx.iqt,4);
+	ci(fx.mqt,5);
+	ci(fx.gqt,6);
+	if (fx.numi.value > 0) {
+		i = fx.iqt.value;
+		m = fx.mqt.value;
+		g = fx.gqt.value;
+		if (i == "") i = 0;
+		if (m == "") m = 0;
+		if (g == "") g = 0;
+		agora = new Date;
+		hora = agora.getHours();
+		min = agora.getMinutes();
+		hm = hora +":"+min;
+		hora = hora+"h"+min;
+		if (min < 10) hora = hora.replace("h","h0");
+		lindia = lindia + 1;
+		if (clreg == 1) {
+			ri = "limpar1";
+			rm = "limpar2";
+			rg = "limpar3";
+			rt = "limpar4";
+			clreg = 2;
+		} else {
+			ri = "lpar1";
+			rm = "lpar2";
+			rg = "lpar3";
+			rt = "lpar4";
+			clreg = 1;
+		}
+		ning = ning + 1;
+		tx = "<table width=100% onClick=\"mostra(this);\" border=0><tr class='"+rt+"'><td colspan=2><b>--- "+hora+" --- </b></td><td align='right'><font color='333377'><i><b>N-"+ning+"</b></i></font></td></tr>";
+		if (fx.iqt.value == "") {
+			fx.iqt.value = 0;
+		} else {
+			tx = tx + "<tr class='"+ri+"'><td>- Inteira:</td><td>" + fx.iqt.value + " ingresso(s).</td>";
+			tx = tx + "<td>- Valor: " + document.getElementById("vli").innerHTML + ".</td>";
+			lindia = lindia + 1;
+		}
+		if (fx.mqt.value == "") {
+			fx.mqt.value = 0;
+		} else {
+			tx = tx + "<tr class='"+rm+"'><td>- Meia:</td><td>" + fx.mqt.value + " ingresso(s).</td>";
+			tx = tx + "<td>- Valor: " + document.getElementById("vlm").innerHTML + ".</td>";
+			lindia = lindia + 1;
+		}
+		if (fx.gqt.value == "") {
+			fx.gqt.value = 0;
+		} else {
+			tx = tx + "<tr class='"+rg+"'><td>- Gratuita:</td><td>" + fx.gqt.value + " ingresso(s).</td>";
+			tx = tx + "<td>----</td>";
+			lindia = lindia + 1;
+		}
+		tx = tx + "<tr class='"+rt+"'><td><b>- Total:</b> </td><td><b>" + document.getElementById("numing").innerHTML + " ingresso(s).</b></td>";
+		tx = tx + "<td><b>Valor Total: " + document.getElementById("vti").innerHTML + ".</b></td>";
+		tx = tx + "<input type='hidden' name='n' value='N-"+ning+"'>";
+		tx = tx + "<input type='hidden' name='i' value="+i+">";
+		tx = tx + "<input type='hidden' name='m' value="+m+">";
+		tx = tx + "<input type='hidden' name='g' value="+g+">";
+		tx = tx + "</td></tr></table>";
+		lindia = lindia + 1;
+		if (lindia > 22) {
+			if (lindia < 100) {
+				gr();
+				lindia = 200;
+				document.getElementById("regdia").innerHTML = "<span class='inifim'>**Início**</span>" + document.getElementById("regdia").innerHTML;
+			}
+		} else if (lindia > 0) {
+			document.getElementById("nada").innerHTML = "";
+		}
+		fx.tint.value = parseInt(fx.tint.value) + parseInt(fx.iqt.value);
+		document.getElementById("toti").innerHTML = fx.tint.value;
+		fx.tmeia.value = parseInt(fx.tmeia.value) + parseInt(fx.mqt.value);
+		document.getElementById("totm").innerHTML = fx.tmeia.value;
+		fx.tgrat.value = parseInt(fx.tgrat.value) + parseInt(fx.gqt.value);
+		document.getElementById("totg").innerHTML = fx.tgrat.value;
+		fx.total.value = parseInt(fx.total.value) + parseInt(fx.iqt.value) + parseInt(fx.mqt.value) + parseInt(fx.gqt.value);
+		document.getElementById("tot").innerHTML = fx.total.value;
+		tirafim = document.getElementById("regdia").innerHTML;
+		tirafim = tirafim.replace("**fim**","");
+		document.getElementById("regdia").innerHTML = tirafim;
+		document.getElementById("regdia").innerHTML = document.getElementById("regdia").innerHTML + tx + fimrel;
+		document.getElementById("regdia").scrollTop = document.getElementById("regdia").scrollHeight;
+		novavenda();
+	}
+	rxx = hojed+"(h "+hm+" h)(n "+ning+" n)(i "+i+" i)(m "+m+" m)(g "+g+" g)(c 1 c)(mt "+mtrc+" mt)(mc *** mc)";
+	inv.push(rxx);
+	document.getElementById("vli").innerHTML = "--";
+	document.getElementById("vlm").innerHTML = "--";
+	document.getElementById("vti").innerHTML = "--";
+	return false;
+}
+function limpatela(){
+	document.getElementById("reging").style.visibility = "hidden";
+	document.getElementById("tabrel").style.visibility = "hidden";
+	document.getElementById("reldias").style.visibility = "hidden";
+	document.getElementById("tvenda").style.visibility = "hidden";
+	document.getElementById("pessoal").style.visibility = "hidden";
+	document.getElementById("valores").style.visibility = "hidden";
+	return false;
+}
+function cdata(a) {
+	cdd = diah-a;
+	caa = anoh;
+	cmm = now.getMonth()+1;
+	if (diah <= a) {
+		cmm = mesh-1;
+		if (cmm == -1) {
+			cmm = 11;
+			caa = anoh-1;
+		}
+		cdd = diam[cmm] + cdd;
+		cmm = cmm+1;
+	}
+	if (cmm < 10) cmm = "0"+cmm;
+	if (cdd < 10) cdd = "0"+cdd;
+	return "(d "+caa+"-"+cmm+"-"+cdd+" d)";
+}
+function mdata(){
+	//clreg = <?php echo $clreg; ?>;
+	//ning = <?php echo $ni ?>;
+	//lindia = <?php echo $lindia; ?>;
+	clreg = 1;
+	lindia = 0;
+	fimrel = "";
+	limpatela();
+	document.getElementById("opcoes").style.visibility = "visible";
+	if (lindia > 22) {
+		gr();
+		lindia = 200;
+		fimrel = "<span class='inifim'>**fim**</span>";
+		document.getElementById("regdia").innerHTML = "<span class='inifim'>**Início**</span>" + document.getElementById("regdia").innerHTML;
+		document.getElementById("regdia").innerHTML = document.getElementById("regdia").innerHTML +"<span class='inifim'>**fim**</span>";
+		document.getElementById("regdia").scrollTop = document.getElementById("regdia").scrollHeight;
+	}
+	if (lindia > 0) {
+		document.getElementById("nada").innerHTML = "";
+	}
+	now = new Date();
+	diah = now.getDate();
+	mesh = now.getMonth();
+	anoh = now.getFullYear();
+	diam = [31,28,31,30,31,30,31,31,30,31,30,31];
+	dia = ["domingo","segunda-feira","terça-feira","quarta-feira","quinta-feira","sexta-feira","sábado"];
+	mes = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+	//hoje = now.getFullYear()+"-"+(now.getMonth()+1)+"-"+now.getDate();
+	hojed = cdata(0);
+	diarq = "Igarassu, " + now.getDate() + " de " + mes[now.getMonth()] + " de " + now.getFullYear() + " (" + dia[now.getDay()] +")";
+	document.getElementById("iini").innerHTML = diarq;
+	if ((anoh%4) == 00) diam[1] = 29;
+	dv1 = cdata(15);
+	d1 = cdata(6);
+	d2 = cdata(5);
+	d3 = cdata(4);
+	d4 = cdata(3);
+	dv2 = d5 = cdata(2);
+	d6 = cdata(1);
+	d7 = cdata(0);
+	pesat = ["/m 123/n Luciano/a A","/m 124/n João/a O","/m 125/n Maria/a O","/m 126/n José Cláudio/a X"]; 
+	pring = [dv1+"(i 5 i)(m 2.5 m)",dv2+"(i 8 i)(m 4 m)"];
+	inv = [];
+	inv[0]  = d1+"(h 12:22:00 h)(n 1 n)(i 2 i)(m 4 m)(g 0 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[1]  = d1+"(h 12:23:00 h)(n 2 n)(i 3 i)(m 4 m)(g 2 g)(c 2 c)(mt 123 mt)(mc 123 mc)";
+	inv[2]  = d1+"(h 12:42:00 h)(n 3 n)(i 3 i)(m 0 m)(g 0 g)(c 2 c)(mt 123 mt)(mc 123 mc)";
+	inv[3]  = d1+"(h 12:44:00 h)(n 4 n)(i 3 i)(m 0 m)(g 0 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[4]  = d1+"(h 12:44:00 h)(n 5 n)(i 3 i)(m 2 m)(g 0 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[5]  = d1+"(h 12:46:00 h)(n 6 n)(i 5 i)(m 0 m)(g 0 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[6]  = d1+"(h 11:49:00 h)(n 1 n)(i 1 i)(m 2 m)(g 3 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[7]  = d1+"(h 11:51:00 h)(n 2 n)(i 4 i)(m 5 m)(g 6 g)(c 2 c)(mt 123 mt)(mc 123 mc)";
+	inv[8]  = d1+"(h 12:48:00 h)(n 3 n)(i 5 i)(m 6 m)(g 4 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[9]  = d1+"(h 12:50:00 h)(n 4 n)(i 5 i)(m 8 m)(g 7 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[10] = d1+"(h 12:51:00 h)(n 5 n)(i 6 i)(m 4 m)(g 8 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[11] = d1+"(h 12:54:00 h)(n 6 n)(i 9 i)(m 4 m)(g 5 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[12] = d1+"(h 12:55:00 h)(n 7 n)(i 5 i)(m 7 m)(g 7 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[13] = d1+"(h 12:56:00 h)(n 8 n)(i 7 i)(m 7 m)(g 7 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[14] = d1+"(h 13:03:00 h)(n 9 n)(i 2 i)(m 4 m)(g 6 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[15] = d1+"(h 13:05:00 h)(n 10 n)(i 4 i)(m 7 m)(g 4 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[16] = d1+"(h 13:08:00 h)(n 11 n)(i 6 i)(m 2 m)(g 4 g)(c 2 c)(mt 123 mt)(mc 124 mc)";
+	inv[17] = d2+"(h 10:11:00 h)(n 1 n)(i 8 i)(m 6 m)(g 2 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[18] = d2+"(h 10:12:00 h)(n 2 n)(i 2 i)(m 4 m)(g 6 g)(c 2 c)(mt 123 mt)(mc 123 mc)";
+	inv[19] = d2+"(h 10:12:00 h)(n 3 n)(i 6 i)(m 1 m)(g 0 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[20] = d2+"(h 10:12:00 h)(n 4 n)(i 2 i)(m 0 m)(g 0 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[21] = d2+"(h 10:20:00 h)(n 5 n)(i 4 i)(m 0 m)(g 0 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[22] = d2+"(h 10:20:00 h)(n 6 n)(i 0 i)(m 5 m)(g 0 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[23] = d2+"(h 10:20:00 h)(n 7 n)(i 0 i)(m 8 m)(g 0 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[24] = d2+"(h 10:20:00 h)(n 8 n)(i 0 i)(m 5 m)(g 0 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[25] = d2+"(h 10:20:00 h)(n 9 n)(i 8 i)(m 0 m)(g 0 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[26] = d2+"(h 10:20:00 h)(n 10 n)(i 1 i)(m 0 m)(g 0 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[27] = d2+"(h 10:20:00 h)(n 11 n)(i 4 i)(m 0 m)(g 0 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[28] = d2+"(h 10:20:00 h)(n 12 n)(i 6 i)(m 0 m)(g 0 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[29] = d3+"(h 10:20:00 h)(n 13 n)(i 5 i)(m 0 m)(g 0 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[30] = d3+"(h 10:20:00 h)(n 14 n)(i 1 i)(m 0 m)(g 0 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[31] = d3+"(h 10:20:00 h)(n 15 n)(i 5 i)(m 6 m)(g 0 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[32] = d3+"(h 13:57:00 h)(n 16 n)(i 3 i)(m 2 m)(g 4 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[33] = d3+"(h 13:57:00 h)(n 17 n)(i 2 i)(m 4 m)(g 2 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[34] = d3+"(h 13:59:00 h)(n 18 n)(i 1 i)(m 2 m)(g 2 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[35] = d3+"(h 14:00:00 h)(n 1 n)(i 2 i)(m 2 m)(g 1 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[36] = d3+"(h 14:05:00 h)(n 2 n)(i 2 i)(m 3 m)(g 3 g)(c 2 c)(mt 123 mt)(mc 123 mc)";
+	inv[37] = d3+"(h 14:10:00 h)(n 3 n)(i 1 i)(m 5 m)(g 0 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[38] = d3+"(h 14:15:00 h)(n 4 n)(i 2 i)(m 1 m)(g 3 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[39] = d3+"(h 14:16:00 h)(n 5 n)(i 1 i)(m 6 m)(g 3 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[40] = d3+"(h 14:21:00 h)(n 6 n)(i 5 i)(m 3 m)(g 2 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[41] = d3+"(h 14:25:00 h)(n 7 n)(i 4 i)(m 7 m)(g 3 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[42] = d3+"(h 14:35:00 h)(n 8 n)(i 2 i)(m 3 m)(g 3 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[43] = d4+"(h 14:00:00 h)(n 1 n)(i 2 i)(m 2 m)(g 1 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[44] = d4+"(h 14:05:00 h)(n 2 n)(i 2 i)(m 3 m)(g 3 g)(c 2 c)(mt 123 mt)(mc 123 mc)";
+	inv[45] = d4+"(h 14:10:00 h)(n 3 n)(i 1 i)(m 5 m)(g 0 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[46] = d4+"(h 14:15:00 h)(n 4 n)(i 2 i)(m 1 m)(g 3 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[47] = d4+"(h 14:16:00 h)(n 5 n)(i 1 i)(m 6 m)(g 3 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[48] = d4+"(h 14:21:00 h)(n 6 n)(i 5 i)(m 3 m)(g 2 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[49] = d4+"(h 14:25:00 h)(n 7 n)(i 4 i)(m 7 m)(g 3 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[50] = d4+"(h 14:35:00 h)(n 8 n)(i 2 i)(m 3 m)(g 3 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[51] = d4+"(h 17:33:00 h)(n 9 n)(i 1 i)(m 2 m)(g 0 g)(c 1 c)(mt 124 m)(mc *** mc)";
+	inv[52] = d5+"(h 17:34:00 h)(n 1 n)(i 3 i)(m 0 m)(g 0 g)(c 2 c)(mt 124 m)(mc 123 mc)";
+	inv[53] = d5+"(h 17:34:00 h)(n 2 n)(i 4 i)(m 2 m)(g 5 g)(c 1 c)(mt 124 m)(mc *** mc)";
+	inv[54] = d5+"(h 17:34:00 h)(n 3 n)(i 3 i)(m 3 m)(g 0 g)(c 1 c)(mt 124 m)(mc *** mc)";
+	inv[55] = d5+"(h 18:39:00 h)(n 4 n)(i 1 i)(m 2 m)(g 0 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[56] = d5+"(h 18:39:00 h)(n 5 n)(i 3 i)(m 0 m)(g 0 g)(c 2 c)(mt 123 mt)(mc 123 mc)";
+	inv[57] = d6+"(h 09:45:00 h)(n 1 n)(i 3 i)(m 0 m)(g 0 g)(c 1 c)(mt 123 m)(mc *** mc)";
+	inv[58] = d6+"(h 09:45:00 h)(n 2 n)(i 0 i)(m 2 m)(g 0 g)(c 1 c)(mt 123 m)(mc *** mc)";
+	inv[59] = d6+"(h 09:45:00 h)(n 3 n)(i 1 i)(m 0 m)(g 0 g)(c 1 c)(mt 123 m)(mc *** mc)";
+	inv[60] = d6+"(h 09:45:00 h)(n 4 n)(i 4 i)(m 0 m)(g 0 g)(c 1 c)(mt 123 m)(mc *** mc)";
+	inv[61] = d6+"(h 09:45:00 h)(n 5 n)(i 3 i)(m 0 m)(g 0 g)(c 1 c)(mt 123 m)(mc *** mc)";
+	inv[62] = d6+"(h 09:45:00 h)(n 6 n)(i 1 i)(m 5 m)(g 4 g)(c 1 c)(mt 123 m)(mc *** mc)";
+	inv[63] = d6+"(h 09:45:00 h)(n 7 n)(i 6 i)(m 6 m)(g 0 g)(c 1 c)(mt 123 m)(mc *** mc)";
+	inv[64] = d6+"(h 16:33:00 h)(n 8 n)(i 1 i)(m 0 m)(g 0 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[65] = d6+"(h 16:34:00 h)(n 9 n)(i 1 i)(m 4 m)(g 0 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[66] = d6+"(h 16:34:00 h)(n 10 n)(i 0 i)(m 5 m)(g 0 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[67] = d6+"(h 16:53:00 h)(n 11 n)(i 3 i)(m 3 m)(g 4 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[68] = d6+"(h 16:53:00 h)(n 12 n)(i 2 i)(m 1 m)(g 6 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[69] = d6+"(h 16:53:00 h)(n 13 n)(i 1 i)(m 2 m)(g 3 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[70] = d6+"(h 16:53:00 h)(n 14 n)(i 2 i)(m 1 m)(g 1 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[71] = d6+"(h 16:53:00 h)(n 15 n)(i 1 i)(m 2 m)(g 1 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[72] = d6+"(h 16:53:00 h)(n 16 n)(i 2 i)(m 1 m)(g 1 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[73] = d7+"(h 15:09:00 h)(n 1 n)(i 3 i)(m 0 m)(g 0 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[74] = d7+"(h 15:09:00 h)(n 2 n)(i 3 i)(m 6 m)(g 3 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[75] = d7+"(h 15:09:00 h)(n 3 n)(i 4 i)(m 5 m)(g 8 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[76] = d7+"(h 15:10:00 h)(n 4 n)(i 1 i)(m 2 m)(g 1 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[77] = d7+"(h 15:10:00 h)(n 5 n)(i 3 i)(m 5 m)(g 2 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[78] = d7+"(h 15:10:00 h)(n 6 n)(i 1 i)(m 1 m)(g 1 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[79] = d7+"(h 15:10:00 h)(n 7 n)(i 2 i)(m 3 m)(g 3 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[80] = d7+"(h 15:10:00 h)(n 8 n)(i 4 i)(m 5 m)(g 6 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	inv[81] = d7+"(h 15:10:00 h)(n 9 n)(i 8 i)(m 4 m)(g 6 g)(c 1 c)(mt 123 mt)(mc *** mc)";
+	ning = 0;
+	tam = pring.length;
+	valintx = parseFloat(separa(pring[tam-1],"i"));
+	valmeiax = parseFloat(separa(pring[tam-1],"m"));
+	document.getElementById("vintsp").innerHTML = "R$"+valintx.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2});
+	document.getElementById("vmeiasp").innerHTML = "R$"+valmeiax.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2});
+	fx.tint.value = 0;
+	fx.tmeia.value = 0;
+	fx.tgrat.value = 0;
+	fx.total.value = 0;
+	fx.iqt.focus();
+}
+function sd(a){
+	if (a == -1) {
+		if (document.getElementById("regdia").scrollTop > a) {
+			document.getElementById("regdia").scrollTop = document.getElementById("regdia").scrollTop -200;
+		} else {
+			document.getElementById("regdia").scrollTop = document.getElementById("regdia").scrollHeight;
+		}
+	} else {
+		if (document.getElementById("regdia").scrollTop + a < document.getElementById("regdia").scrollHeight) {
+			document.getElementById("regdia").scrollTop = document.getElementById("regdia").scrollTop + 200;
+		} else {
+			document.getElementById("regdia").scrollTop = document.getElementById("regdia").scrollHeight;
+		}
+	}
+	return false;
+}
+function gr(){
+	barra = "<td valign=top bgcolor='225522'><div onClick=\"return sd(-1);\" style='transform:rotate(180deg);color:ffddaa;'>V</div></td>";
+	barra = barra + "</tr><tr><td valign=bottom bgcolor='225522'><span onClick=\"return sd(1);\">V</span></td>";
+	tabe = document.getElementById("tabrel").innerHTML;
+	rs = tabe.indexOf("rowspan");
+	if (rs < 2) {
+		rs = tabe.indexOf("ROWSPAN");
+	}
+	rs = tabe.indexOf("1",rs);
+	tabe1 = tabe.substr(0,rs);
+	tabe2 = tabe.substr(rs);
+	tabe = tabe1 + "2" + tabe2;
+	brol = tabe.lastIndexOf("</tr");
+	if (brol < 2) {
+		brol = tabe.indexOf("</TR");
+	}
+	brol = brol-1;
+	tabe1 = tabe.substr(0,brol);
+	tabe2 = tabe.substr(brol);
+	tabe = tabe1 + barra + tabe2;
+	document.getElementById("tabrel").innerHTML = tabe;
+	return false;
+}
+function vendadia(){
+	limpatela();
+	document.getElementById("reging").style.visibility = "visible";
+	document.getElementById("tabrel").style.visibility = "visible";
+	rxa();
+}
+function relatorio(){
+	limpatela();
+	document.getElementById("reldias").style.visibility = "visible";
+	rel = "<form name='fd'>";
+	rel = rel + "<table class='tb1'>";
+	rel = rel + "<tr class='t10'>";
+	rel = rel + "<td class='c1'>";
+	rel = rel + "Período de <input type='date' placeholder='dd/mm/aaaa' name='dia1'> até <input type='date' placeholder='dd/mm/aaaa' name='dia2'> ";
+	rel = rel + "<button onClick=\"return datarel();\" id='relbut'>Relatório</button>";
+	rel = rel + "</td>";
+	rel = rel + "</tr>";
+	rel = rel + "</table>";
+	rel = rel + "</form>";
+	document.getElementById("reldias").innerHTML = rel;
+	document.getElementById("reldias").style.visibility = "visible";
+}
+function fxtab(cab){
+	cab = cab.replace(/#1/g,"<tr class='tl0'><td align=right class='c1'>");
+	cab = cab.replace(/#2/g,"</td><td align=right class='c1'>");
+	cab = cab.replace(/#3/g,"</td></tr>");
+	return cab;
+}
+function funtab(cab,itens){
+	//cab = fxtab(cab);
+	itens = itens.replace(/#i1r/g,"<tr class='tl1' valign=top><td align=right class='c1'>");
+	itens = itens.replace(/#p1r/g,"<tr class='tl2' valign=top><td align=right class='c1'>");
+	itens = itens.replace(/#c1r/g,"<tr class='tlc' valign=top><td align=right class='c1'>");
+	itens = itens.replace(/#t1r/g,"<tr class='tlt' valign=top><td align=right class='c1'>");
+	itens = itens.replace(/#i1/g,"<tr class='tl1' valign=top><td class='c1'>");
+	itens = itens.replace(/#p1/g,"<tr class='tl2' valign=top><td class='c1'>");
+	//itens = itens.replace(/#c1/g,"<tr class='tlc' valign=top><td class='c1'>");
+	itens = itens.replace(/#t1/g,"<tr class='tlt' valign=top><td class='c1'>");
+	itens = itens.replace(/#tt/g,"<tr class='ttt' valign=top><td align=center class='c1'>");
+	itens = itens.replace(/#2r/g,"</td><td align=right align=right class='c1'>");
+	itens = itens.replace(/#2/g,"</td><td class='c1'>");
+	itens = itens.replace(/#3/g,"</td></tr>");
+	ix = itens.indexOf("tr class");
+	//itens = cab+itens;
+	itens = "<table class='tb1'>" + itens + "</table>";
+	return itens;
+
+}
+function xx_datarel(){
+	d1 = fd.dia1.value;
+	d2 = fd.dia2.value;
+	d1 = d1.substr(8,2)+"/"+d1.substr(5,2)+"/"+d1.substr(0,4);
+	d2 = d2.substr(8,2)+"/"+d2.substr(5,2)+"/"+d2.substr(0,4);
+	env = "acao=Rel&dia1="+fd.dia1.value+"&dia2="+fd.dia2.value;
+	//result = new XMLHttpRequest();
+	//result.open("POST","museu-registros.php",false);
+	//result.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	//result.send(env);
+	//itens = result.responseText;
+	cab = "#1 Hora &nbsp;&nbsp;#2 &nbsp;Número &nbsp;&nbsp;#2 &nbsp;Inteiras &nbsp;&nbsp;#2 &nbsp;Valor (I) R$ &nbsp;&nbsp;#2 &nbsp;Meias &nbsp;&nbsp;#2 &nbsp;Valor (M) R$ &nbsp;&nbsp;#2 &nbsp;Gratuitas &nbsp;&nbsp;#2 &nbsp;Vendidos &nbsp;&nbsp;#2 &nbsp;Valor (T) R$ &nbsp;&nbsp;#2 &nbsp;Cancelamentos &nbsp;&nbsp;#3";
+	relitens = funtab(cab,itens);
+	botx = "<button onClick=\"return imp();\"> Imprimir </button><br><br>";
+	topo = "<span id='aimp'>";
+	topo = topo+'<table><tr><td><img src="logo_fundaj.jpg" width=85 width=60 align=middle>';
+	topo = topo+"<td><font class='c01'><b>Fundação do Museu da Cidade</b></font>&nbsp;<br>";
+	topo = topo+"<font class='c02'>Museu da Cidade de Igarassu - MUCIG</font>&nbsp;<br>";
+	topo = topo+"<font class='c02'>Relatório de Vendas de Ingressos <br> Período de "+d1+" até "+d2+" - Página #npag/#ntpag</font></td></tr></table><br><br>";
+	relitens = relitens.replace(/Nova Pagina/g,"</table><br><br><br>"+topo+"<table class='tb1'>"+fxtab(cab));
+	frel = "</span>";
+	relatx = botx + topo + relitens + frel;
+	npag = 1;
+	i = relatx.indexOf("#npag");
+	while (i > 0) {
+		xpag = ""+npag;
+		relatx = relatx.replace("#npag",xpag);
+		i = relatx.indexOf("#npag");
+		npag = npag+1;
+	}
+	i = relatx.indexOf("#ntpag");
+	while (i > 0) {
+		relatx = relatx.replace("#ntpag",xpag);
+		i = relatx.indexOf("#ntpag");
+	}
+	document.getElementById("reldias").innerHTML = document.getElementById("reldias").innerHTML + relatx;
+	return false;
+}
+function datarel(){
+	data1 = ""+fd.dia1.value;
+	data2 = ""+fd.dia2.value;
+	diant = "";
+	horant = "";
+	tdint = 0;
+	tdmeia = 0;
+	tdgrat = 0;
+	tddia = 0;
+	tgint = 0;
+	tgmeia = 0;
+	tggrat = 0;
+	tgdia = 0;
+	lat = "#i1r";
+	lant = "#p1r";
+	tviv = 0;
+	tvmv = 0;
+	tpi = 0;
+	tpm = 0;
+	itens = "";
+	linhas = 0;
+	tddoa = 0;
+	tampring = pring.length;
+	indd = tampring-1;
+	fimpag = "<tr bgcolor='bbffdd'><td colspan=10><hr style='border-style:double;'></td></tr>";
+	while (data1 < separa(pring[indd],"d")) indd = indd-1;
+	valint = vix = parseFloat(separa(pring[indd],"i"));
+	valmeia = vmx = parseFloat(separa(pring[indd],"m"));
+	indd = indd+1;
+	diant = "";
+	tam = inv.length;
+	ind = 0;
+	cab = "#1 Hora &nbsp;&nbsp;#2 &nbsp;Número &nbsp;&nbsp;#2 &nbsp;Inteiras &nbsp;&nbsp;#2 &nbsp;Valor (I) R$ &nbsp;&nbsp;#2 &nbsp;Meias &nbsp;&nbsp;#2 &nbsp;Valor (M) R$ &nbsp;&nbsp;#2 &nbsp;Gratuitas &nbsp;&nbsp;#2 &nbsp;Vendidos &nbsp;&nbsp;#2 &nbsp;Valor (T) R$ &nbsp;&nbsp;#2 &nbsp;Cancelamentos &nbsp;&nbsp;#3";
+	cab = fxtab(cab);
+	diant = ddreg = data1;
+	while (ddreg > separa(inv[ind],"d")) {
+		ind = ind+1;
+		if (ind == tam) ddreg = "2100-12-31";
+	}
+	ddreg = separa(inv[ind],"d");
+	while (ddreg <= data2) {
+		if (separa(inv[ind],"d") == diant) {
+			dx = "";
+		} else {
+			diah = separa(inv[ind],"d");
+			if (indd < tampring) {
+				if (separa(pring[indd],"d") == diah) {
+					valint = vix = parseFloat(separa(pring[indd],"i"));
+					valmeia = vmx = parseFloat(separa(pring[indd],"m"));
+					indd = indd+1;
+				}
+
+			}
+			if (tddia != 0) {
+				dx = diant.substr(8,2)+"/"+diant.substr(5,2)+"/"+diant.substr(0,4);
+				tvtv = tviv + tvmv;
+				tpi = tpi + tviv;
+				tpm = tpm + tvmv;
+				tvix = tviv.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2});
+				tvmx = tvmv.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2});
+				tvtx = tvtv.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2});
+				itens = itens +"#t1 Total do dia &nbsp;&nbsp;<br><table><tr><td>"+dx+" &nbsp;&nbsp;</td></tr></table>#2 - &nbsp;&nbsp;#2r "+tdint+" &nbsp;&nbsp;#2r "+tvix+" &nbsp;&nbsp;#2r "+tdmeia+" &nbsp;&nbsp;#2r "+tvmx+" &nbsp;&nbsp;#2r"+tdgrat+" &nbsp;&nbsp;#2r<b>"+tddia+" &nbsp;&nbsp;#2r "+tvtx+" &nbsp;&nbsp;#2r #3"+fimpag;
+				tviv = 0;
+				tvmv = 0;
+				linhas = linhas + 2;
+			}
+			dx = separa(inv[ind],"d");
+			diant = dx;
+			dx = dx.substr(8,2)+"/"+dx.substr(5,2)+"/"+dx.substr(0,4);
+			tdint = 0;
+			tdmeia = 0;
+			tdgrat = 0;
+			tddia = 0;
+			viv = valint;
+			vmv = valmeia;
+			vx = valint.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2});
+			vy = valmeia.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2});
+			//nd = "#i1r Dia: "+dx+" &nbsp;&nbsp;<br>";
+			//nd = nd+"<table width=100%><tr><td align=right> Valor da Inteira: </td><td align=right>R$"+vx+" &nbsp;&nbsp;</td></tr><tr><td align=right> Valor da Meia: </td><td align=right>R$"+vy+"  &nbsp;&nbsp;</td></tr></table>#2 #2 #2 #2 #2 #2 #2 #2 #2 #3";
+			cabnd = " <tr><td colspan=10>Dia: "+dx+" &nbsp;&nbsp;<br>  Valor da Inteira: R$"+vx+" &nbsp;&nbsp; Valor da Meia: R$"+vy+"</td></tr>"+cab;
+			itens = itens+cabnd;
+			linhas = linhas + 3;
+		}
+		if (separa(inv[ind],"h") == horant) {
+			hx = "";
+		} else {
+			hx = separa(inv[ind],"h");
+			horant = hx;
+			hx = hx.substr(0,2)+"h"+hx.substr(3,2);
+		}
+		poui = lat;
+		lat = lant;
+		lant = poui;
+		linhas = linhas + 1;
+		if (separa(inv[ind],"c") == 2) {
+			canc = "Cancelado";
+			total = parseInt(separa(inv[ind],"i")) + parseInt(separa(inv[ind],"m")) + parseInt(separa(inv[ind],"g"));
+			inil = "#c1r";
+		} else {
+			inil = poui;
+			canc = "";
+			tdint = tdint + parseInt(separa(inv[ind],"i"));
+			tgint = tgint + parseInt(separa(inv[ind],"i"));
+			tdmeia = tdmeia + parseInt(separa(inv[ind],"m"));
+			tgmeia = tgmeia + parseInt(separa(inv[ind],"m"));
+			tdgrat = tdgrat + parseInt(separa(inv[ind],"g"));
+			tggrat = tggrat + parseInt(separa(inv[ind],"g"));
+			total = parseInt(separa(inv[ind],"i"))+parseInt(separa(inv[ind],"m"))+parseInt(separa(inv[ind],"g"));
+			tddia = tddia + total;
+			tgdia = tgdia + total;
+		}
+		int = parseInt(separa(inv[ind],"i"));
+		meia = parseInt(separa(inv[ind],"m"));
+		grat = parseInt(separa(inv[ind],"g"));
+		//tviv = tvmv = 0;
+		if (int > 0) {
+			vix = (int*valint).toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2});
+			if (separa(inv[ind],"c") == 1) tviv = tviv + int*valint;
+		} else {
+			vix = " --- ";
+			viv = 0;
+		}
+		if (meia > 0) {
+			vmx = (meia*valmeia).toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2});
+			if (separa(inv[ind],"c") == 1) tvmv = tvmv + meia*valmeia;
+		} else {
+			vmx = " --- ";
+			vmv = 0;
+		}
+		vtv = int*valint + meia*valmeia;
+		vtx = vtv.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2});
+		nnn = ("0000"+separa(inv[ind],"n"))
+		numero = nnn.substr(-3)
+		if (int == 0) int = "--";
+		if (meia == 0) meia = "--";
+		if (grat == 0) grat = "--";
+		itens = itens + inil+hx+" &nbsp;&nbsp;#2r"+numero+" &nbsp;&nbsp;#2r"+int+"  &nbsp;&nbsp;#2r &nbsp;&nbsp;"+vix+"  &nbsp;&nbsp;#2r"+meia+"  &nbsp;&nbsp;#2r &nbsp;&nbsp;"+vmx+"  &nbsp;&nbsp;#2r"+grat+"  &nbsp;&nbsp;#2r"+total+"  &nbsp;&nbsp;#2r "+vtx+"  &nbsp;&nbsp;#2r"+canc+"  &nbsp;&nbsp;";
+		if (linhas > 53) {
+			while (linhas < 56) {
+				linhas = linhas +1;
+				itens = itens+"<br>";
+			}
+			linhas = 3;
+			itens = itens + "#3";
+			itens = itens + "Nova Pagina";
+			itens = itens + cab;
+		} else {
+			itens = itens + "#3";
+		}
+		ind = ind+1;
+		if (ind == tam) {
+			ddreg = "9999999999";
+		} else {
+			ddreg = separa(inv[ind],"d");
+		}
+	}
+	vx = tviv.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2});
+	vy = tvmv.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2});
+	tvtv = tviv + tvmv;
+	vz = tvtv.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2});
+	itens = itens+"#t1 Total do dia &nbsp;&nbsp;<br>"+diant+" &nbsp;&nbsp;#2 - &nbsp;&nbsp;#2r "+tdint+" &nbsp;&nbsp;#2r &nbsp;&nbsp;"+vx+" &nbsp;&nbsp;#2r "+tdmeia+" &nbsp;&nbsp;#2r &nbsp;&nbsp;"+vy+" &nbsp;&nbsp;#2r"+tdgrat+" &nbsp;&nbsp;#2r"+tddia+" &nbsp;&nbsp;#2r &nbsp;&nbsp;"+vz+" &nbsp;&nbsp; #2 #3"+fimpag;
+	if (data1 != data2) {
+		tpi = tpi + tviv;
+		tpm = tpm + tvmv;
+		tpg = tpi + tpm;
+		tpi = tpi.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2});
+		tpm = tpm.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2});
+		tpg = tpg.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2});
+		itens = itens+"#tt<b>Total do &nbsp;<br>Período &nbsp;<br>"+data1+" &nbsp;<br>a &nbsp;<br><b>"+data2+"</b> &nbsp;#2 #2r <b>"+tgint+"</b> &nbsp;&nbsp;#2r <b>"+tpi+"</b> &nbsp;&nbsp;#2r <b>"+tgmeia+"</b> &nbsp;&nbsp;#2r <b>"+tpm+"</b> &nbsp;&nbsp;#2r<b>"+tggrat+"</b> &nbsp;&nbsp; #2r<b>"+tgdia+"</b> &nbsp;&nbsp;#2r <b>"+tpg+"</b> &nbsp;&nbsp;#2 #3";
+		linhas = linhas + 3;
+	}
+	relitens = funtab(cab,itens);
+	botx = "<button onClick=\"return imp();\"> Imprimir </button><br><br>";
+	topo = "<span id='aimp'>";
+	//topo = topo+'<table><tr><td><img src="logo_fundaj.jpg" width=85 width=60 align=middle>';
+	topo = topo+'<table width=100%><tr><td width=50><table class="tb1"><tbody><tr><td rowspan="3" bgcolor="aaaaff" style="color:222255;">&nbsp;&nbsp;&nbsp;</td><td rowspan="2" bgcolor="777799"><br><hr style="border-color:aaaaff;border-style:groove;border-width:4px" width="50%" align="right">ogo<b style="font-size:18px"><i>M</i></b>arca</td></tr><tr></tr><tr><td bgcolor="a0a0f0"><br></td></tr></tbody></table>';
+	topo = topo+"<td width=5></td><td><td><font class='c01'><b>Fundação do Museu da Cidade</b></font>&nbsp;<br>";
+	topo = topo+"<font class='c02'>Museu da Cidade de Igarassu - MUCIG</font>&nbsp;<br>";
+	topo = topo+"<table width='100%' cellpadding=0 cellspacing=0><tr><td><font class='c02'>Relatório de Vendas de Ingressos<br>Período de "+data1+" até "+data2+"</font></td><td valign='bottom' align='right'><font class='c02'>Página #npag/#ntpag&nbsp;&nbsp;</font></td></tr></table></td></tr></table><br><br>";
+	relitens = relitens.replace(/Nova Pagina/g,"</table><br><br><br>"+topo+"<table class='tb1'>");//+fxtab(cab));
+	frel = "</span>";
+	relatx = botx + topo + relitens + frel;
+	npag = 1;
+	i = relatx.indexOf("#npag");
+	while (i > 0) {
+		xpag = ""+npag;
+		relatx = relatx.replace("#npag",xpag);
+		i = relatx.indexOf("#npag");
+		npag = npag+1;
+	}
+	i = relatx.indexOf("#ntpag");
+	while (i > 0) {
+		relatx = relatx.replace("#ntpag",xpag);
+		i = relatx.indexOf("#ntpag");
+	}
+	document.getElementById("reldias").innerHTML = document.getElementById("reldias").innerHTML + relatx;
+	return false;
+}
+function xx_tabpessoal(){
+	env = "acao=P";
+	result = new XMLHttpRequest();
+	result.open("POST","museu-registros.php",false);
+	result.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	result.send(env);
+	itens = result.responseText;
+	return itens;
+}
+function ativt(a) {
+	retx = "Atividade";
+	switch (a) {
+		case "A" :
+			retx = "Administrador";
+			break;
+		case "O" :
+			retx = "Operador";
+			break;
+		case "X" :
+			retx = "Suspenso";
+			break;
+	}
+	return retx;
+}
+function tabpessoal(){
+	tam = pesat.length;
+	ind = 0;
+	itens = "";
+	ix = "#p1";
+	iy = "#i1";
+	while (ind < tam) {
+		itens = itens+ix+fsep(pesat[ind],"/m")+"#2"+fsep(pesat[ind],"/n")+"#2&nbsp;"+ativt(fsep(pesat[ind],"/a"))+"&nbsp;#3";
+		trx = ix;
+		ix = iy;
+		iy = trx;
+		ind = ind+1;
+	}
+	return itens;
+}
+function fsep(a,b) {
+	x = a.indexOf(b)+3;
+	y = a.indexOf("/",x)-x;
+	if (y < 0) y = a.length;
+	c = a.substr(x,y);
+	return c;
+}
+function xx_spes(){
+	env = "acao=SP&matr="+fp.mated.value+"&nome="+fp.nomed.value+"&adus="+fp.adused.value;
+	alert(env);
+	result = new XMLHttpRequest();
+	result.open("POST","museu-registros.php",false);
+	result.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	result.send(env);
+	itens = result.responseText;
+	limpatela();
+	return false;
+}
+function spes(){
+	regp = "/m "+fp.mated.value+"/n "+fp.nomed.value+"/a "+fp.adused.value;
+alert(tamped+"||"+ind)
+	if (ind > tamped) {
+alert("novo")
+		pesat.push(regp);
+		esenha.push(parseInt(fp.mated.value));
+		efunc.push(fp.adused.value);
+		emat.push(parseInt(fp.mated.value));
+alert(emat)
+	} else {
+		pesat[indx] = regp;
+		esenha[indx] = fp.mated.value;
+		efunc[indx] = fp.adused.value;
+		emat[indx] = fp.mated.value;
+alert("altera")
+	}
+	limpatela();
+	return false;
+}
+function xx_edpes(){
+	mated = fp.mated.value;
+	env = "acao=EP&matr="+mated;
+	result = new XMLHttpRequest();
+	result.open("POST","museu-registros.php",false);
+	result.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	result.send(env);
+	itens = result.responseText;
+	alert(itens);
+	matr = fsep(itens,"/m");
+	nome = fsep(itens,"/n");
+	adus = fsep(itens,"/a");
+	au1 = "";
+	au2 = "";
+	au3 = "";
+	enf1 = enf2 = enf3 = "";
+	denf1 = denf2 = denf3 = "";
+	switch (adus) {
+		case "A":
+			au1 = "checked";
+			enf1 = "<b>";
+			denf1 = "</b>";
+			break;
+		case "O":
+			au2 = "checked";
+			enf2 = "<b>";
+			denf2 = "</b>";
+			break;
+		case "X":
+			au3 = "checked";
+			enf3 = "<b>";
+			denf3 = "</b>";
+			break;
+	}
+	edp = "<br><br><form name='fp'>";
+	edp = edp + "<table class='tb1'>";
+	edp = edp + "<tr class='tl0'><td class='c1'>";
+	edp = edp + "Matrícula </td><td><input type='text' size=5 name='mated' value="+matr+"></td></tr>";
+	edp = edp + "<tr class='tl2'><td class='c1'>";
+	edp = edp + "Nome </td><td><input type='text' size=20 name='nomed' value='"+nome+"'></td></tr>";
+	edp = edp + "<tr class='tl1'><td class='c1'>";
+	edp = edp + "Atividade </td><td>";
+	edp = edp + "<input type='radio' name='adused' "+au1+" value='A'>"+enf1+" Administrador"+denf1;
+	edp = edp + "<input type='radio' name='adused' "+au2+" value='O'>"+enf2+" Operador"+denf2;
+	edp = edp + "<input type='radio' name='adused' "+au3+" value='X'>"+enf3+" Desativado"+denf3;
+	edp = edp + "</td></tr>";
+	edp = edp + "<tr class='tl1'><td class='c1'>";
+	edp = edp + "<button onClick=\"return spes();\">Salvar</button></td><td><button onClick=\"return limpatela();\">Cancelar</button";
+	edp = edp + "</table>";
+	edp = edp + "</form>";
+	document.getElementById("pessoal").innerHTML = tab+edp;
+	return itens;
+}
+function edpes(){
+	mated = fp.mated.value;
+	matr = "";
+	nome = "";
+	adus = "";
+	tamped = pesat.length;
+	indx = tamped+1
+	ind = 0;
+	if (mated != "") {
+		while (ind < tamped) {
+			ped = pesat[ind].indexOf("/m "+mated);
+			if (ped > -1) {
+				indx = ind;
+				ind = tamped;
+			}
+			ind = ind+1;
+		}
+		if (ind > tamped) {
+			itens = pesat[indx];
+			matr = fsep(itens,"/m");
+			nome = fsep(itens,"/n");
+			adus = fsep(itens,"/a");
+		}
+	} else {
+		ind = tamped+1;
+	}
+	au1 = "";
+	au2 = "";
+	au3 = "";
+	enf = ["","",""];
+	denf = ["","",""];
+	switch (adus) {
+		case "A":
+			au1 = "checked";
+			enf[0] = "<b>";
+			denf[0] = "</b>";
+			break;
+		case "O":
+			au2 = "checked";
+			enf[1] = "<b>";
+			denf[1] = "</b>";
+			break;
+		case "X":
+			au3 = "checked";
+			enf[2] = "<b>";
+			denf[2] = "</b>";
+			break;
+	}
+	edp = "<br><br><form name='fp'>";
+	edp = edp + "<table class='tb1'>";
+	edp = edp + "<tr class='tl0'><td class='c1'>";
+	edp = edp + "Matrícula </td><td><input type='text' size=5 name='mated' value="+matr+"></td></tr>";
+	edp = edp + "<tr class='tl2'><td class='c1'>";
+	edp = edp + "Nome </td><td><input type='text' size=20 name='nomed' value='"+nome+"'></td></tr>";
+	edp = edp + "<tr class='tl1'><td class='c1'>";
+	edp = edp + "Atividade </td><td>";
+	edp = edp + "<input type='radio' name='adused' "+au1+" value='A'>"+enf[0]+" Administrador"+denf[0];
+	edp = edp + "<input type='radio' name='adused' "+au2+" value='O'>"+enf[1]+" Operador"+denf[1];
+	edp = edp + "<input type='radio' name='adused' "+au3+" value='X'>"+enf[2]+" Desativado"+denf[2];
+	edp = edp + "</td></tr>";
+	edp = edp + "<tr class='tl1'><td class='c1'>";
+	edp = edp + "<button onClick=\"return spes();\">Salvar</button></td><td><button onClick=\"return limpatela();\">Cancelar</button";
+	edp = edp + "</table>";
+	edp = edp + "</form>";
+	document.getElementById("pessoal").innerHTML = tab+edp;
+	return itens;
+}
+function pessoal(){
+	limpatela();
+	document.getElementById("pessoal").style.visibility = "visible";
+	cab = "#1 Matrícula #2 Nome &nbsp;&nbsp;&nbsp;&nbsp;#2 Atividade #3";
+	cab = fxtab(cab);
+	itens = cab+tabpessoal();
+	tab = funtab(cab,itens);
+	edp = "<br><br><form name='fp'>";
+	edp = edp + "<table class='tb1'>";
+	edp = edp + "<tr class='tl1'>";
+	edp = edp + "<td class='c1'>";
+	edp = edp + "Matrícula <input type='text' placeholder='Novo' size=5 name='mated'>";
+	edp = edp + "<button onClick=\"return edpes();\">Editar</button>";
+	edp = edp + "</td>";
+	edp = edp + "</tr>";
+	edp = edp + "</table>";
+	edp = edp + "</form>";
+	document.getElementById("pessoal").innerHTML = tab+edp;
+	return false;
+}
+function xx_veval(){
+	diav = fv.dia.value;
+	env = "acao=VV&dia="+fv.dia.value;
+	result = new XMLHttpRequest();
+	result.open("POST","museu-registros.php",false);
+	result.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	result.send(env);
+	itens = result.responseText;
+	cab = "#1 A partir do dia #2 <input type='date' name='dia' onBlur=\"return veval();\" value="+diav+"><br> #3";
+	itens = itens + "#p1 <button onClick='return sval();'> Salvar </button> #2 <button onClick='return limpatela();'> Cancelar </button>&nbsp;&nbsp; #3";
+	tx = funtab(cab,itens);
+	document.getElementById("valing").innerHTML = tx;
+	return false;
+}
+function veval(){
+	diav = ""+fv.dia.value;
+	tampring = pring.length;
+	indd = tampring-1;
+	diau = ""+separa(pring[indd],"d");
+	while (diau > diav) {
+		indd = indd-1;
+		diau = ""+separa(pring[indd],"d");
+
+	}
+	vx = parseFloat(separa(pring[indd],"i"));
+	vx = vx*100;
+	vx = vx/100;
+	valintu = vx.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2});
+	vx = parseFloat(separa(pring[indd],"m"));
+	vx = vx*100;
+	vx = vx/100;
+	valmeiau = vx.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2});
+	itens = "#i1r &nbsp;&nbsp;Tipo&nbsp;&nbsp; #2 &nbsp;&nbsp;Valores&nbsp;&nbsp; #3#p1r &nbsp;&nbsp;Inteira&nbsp;&nbsp; #2 R$<input type='text' size=7 name='ivt' value="+valintu+">&nbsp;&nbsp; #3#i1r &nbsp;&nbsp;Meia&nbsp;&nbsp; #2 R$<input type='text' size=7 name='mvt' value="+valmeiau+">&nbsp;&nbsp; #3";
+	cab = "#1 A partir do dia #2 <input type='date' name='dia' onBlur=\"return veval();\" value="+diav+"><br> #3";
+	cab = fxtab(cab);
+	itens = cab+itens + "#p1r <button onClick='return sval();'> Salvar </button>&nbsp;&nbsp;#2 &nbsp<button onClick='return limpatela();'> Cancelar </button>&nbsp;&nbsp; #3";
+	tx = funtab(cab,itens);
+	document.getElementById("valing").innerHTML = tx;
+	return false;
+}
+function valoring(){
+	limpatela();
+	document.getElementById("valores").style.visibility = "visible";
+	tx = "<table class=tb1>";
+	tx = tx + "<tr class=tl0>";
+	tx = tx + "<td class=c1 colspan=2>A partir do dia <input type='date' name='dia' onBlur=\"return veval();\"><br></td>";
+	tx = tx + "</tr>";
+	tx = tx + "</table>";
+	document.getElementById("valing").innerHTML = tx;
+	return false;
+}
+function xx_sval(){
+	vi = fv.ivt.value;
+	vm = fv.mvt.value;
+	vi = vi.replace("R$","");
+	vi = vi.replace(/\./g,"");
+	vi = vi.replace(",",".");
+	vm = vm.replace("R$","");
+	vm = vm.replace(/\./g,"");
+	vm = vm.replace(",",".");
+	env = "acao=VAL&dia="+fv.dia.value+"&valint="+vi+"&valmeia="+vm;
+	result = new XMLHttpRequest();
+	result.open("POST","museu-registros.php",false);
+	result.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	result.send(env);
+	itens = result.responseText;
+	limpatela();
+	return false;
+}
+function sval(){
+	vi = fv.ivt.value;
+	vm = fv.mvt.value;
+	//vi = vi.replace("R$","");
+	vi = vi.replace(/\./g,"");
+	vi = vi.replace(",",".");
+	//vm = vm.replace("R$","");
+	vm = vm.replace(/\./g,"");
+	vm = vm.replace(",",".");
+	rxx = "(d "+diav+" d)(i "+vi+" i)(m "+vm+" m)";
+	pring.push(rxx)
+	limpatela();
+	return false;
+}
+function imp(){
+	a = "<style>";
+	a = a + ".horiz {";
+	a = a + "transform: rotate(90deg);";
+	a = a + "position:relative;";
+	a = a + "top:-90px;";
+	a = a + "left:-160px;";
+	a = a + "width:100%;";
+	a = a + "height:100%;";
+	a = a + "font-size:10px;";
+	a = a + "font-family:Arial";
+	a = a + "}";
+	a = a + "table {";
+	a = a + "font-size:10px;";
+	a = a + "font-family:Arial";
+	a = a + "border-top-width:1px;";
+	a = a + "}";
+	a = a + "</style>";
+	a = a +  aimp.innerHTML;
+	a = a.replace(/tb1/g,'tbr');
+	janela = window.open("","","status,top=200,left=200,height=10,width=10");
+	janela.document.write(a);
+	//janela.print();
+	//janela.close();
+}
+function botoes() {
+	bts = "";
+	if (func == "A") {
+		bts = "<button onClick='return relatorio();'>Relatório de vendas</button>";
+		bts = bts+" <button onClick='return valoring();'>Valores dos Ingressos</button>";
+		bts = bts+" <button onClick='return pessoal();'>Usuários do sistema</button>";
+	}
+	document.getElementById("bots").innerHTML = bts;
+}
+function ativ() {
+	mtrc = fxini.matrc.value;
+	document.getElementById("telaini").style.display = "none";
+	document.getElementById("telaoper").style.display = "inline";
+	botoes();
+	return false;
+}
+function inicia() {
+	emat = [123,124,125,126];
+	esenha = ["abc","def",125,"asd"];
+	efunc = ["A","O","O","X"];
+	document.getElementById("telaini").style.display ="none"
+	mdata();
+	tiramsg();
+	sessao();
+}
+function sessao() {
+	limpatela();
+	document.getElementById("telatrs").style.display ="none";
+	document.getElementById("telaoper").style.display ="none";
+	document.getElementById("telaini").style.display ="inline";
+	document.getElementById("telacab").style.display ="inline";
+	fxini.matrc.focus();
+	fxini.matrc.value = "";
+	fxini.senha.value = "";
+}
+function trsenha(){
+	if (fxtrs.senhan.value != fxtrs.senhar.value) {
+		document.getElementById("msgt").innerHTML = "Senha e confirmação são diferentes. Favor corrigir.";
+	} else {
+	if (fxtrs.senhan.value.length < 3) {
+		document.getElementById("msgt").innerHTML = "Senha muito curta. Precisa ter mais que 3 caracteres."
+	} else {
+	if (fsep(pesat[ind],"/n").indexOf(fxtrs.senhan.value) > -1) {
+		document.getElementById("msgt").innerHTML = "Senha não pode ser parte do nome. Favor tentar outra."
+	} else {
+		alert("Senha atualizada com sucesso");
+		esenha[ind] = fxtrs.senhan.value;
+		sessao();
+	}}}
+	return false;
+}
+function iniativ(){
+	nada = "Matrícula/Senha não conferem - Preencher corretamente!";
+	inat = "Usuário desativado!";
+	if (fxini.matrc.value != "") {
+		ind = emat.indexOf(parseInt(document.getElementById("imatr").value));
+		if (ind < 0) {
+			document.getElementById("msgi").innerHTML = nada;
+		} else {
+			if (esenha[ind] == document.getElementById("isenha").value) {
+				if (esenha[ind] == emat[ind]) {
+					document.getElementById("telaini").style.display ="none";
+					document.getElementById("telatrs").style.display ="inline";
+					fxtrs.senha.focus();
+					document.getElementById("msgt").innerHTML = "Favor Trocar a Senha";
+				} else {
+					func = efunc[ind];
+					if (func == "X") {
+						document.getElementById("msgi").innerHTML = inat;
+					} else {
+						ativ();
+					}
+				}
+			} else {
+				document.getElementById("msgi").innerHTML = nada;
+			}
+		}
+	} else {
+		ind == emat.length+1;
+	}
+	return false;
+}
+function tiramsg() {
+	document.getElementById("msgi").innerHTML = "";
+}
+</script>
+<body xonLoad='inicia();'>
+<!-- Apresentação -->
+<!-- Apresentação -->
+<!-- Apresentação -->
+<dir><dir>
+<div id="apres" style="background-color:eeeeaa;color:225533;padding:20px;width:900px;text-align:justify;border:5px solid;border-color:225533;">
+<table width=900 style="position:fixed;top:12px;z-index:1" class="tbx" bgcolor="aaaa77">
+<tr><td align="center"><font size=+2> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <b>APRESENTAÇÃO</b></font> </td><td align="right"><button onClick="document.getElementById('apres').style.display='none';inicia();">Fechar esta tela de Apresentação<br>e mostrar o funcionamento do sistema.</button></td></tr>
+</table>
+<br><br><br><br><br>
+Este sistema foi desenvolvido pra automatizar a venda de ingressos para o Museu.
+<br><br>
+O sistema foi desenvolvido em PHP e JavaScript e utiliza um banco SQL. Para esta apresentação esta página foi desenvolvida no HTML básico e em JavaScript. Os dados nesta página contêm dados e valores fictícios e são carregados diretamente. Por isso foi colocada a mensagem de que os dados foram carregados. É um sistema de venda de ingressos num museu que administra tanto pessoal para as funções do sistema quanto para venda de ingressos, apresenta as vendas na tela. Se precisar mostrar ao cliente mostra na tela exclusivamente a respectiva venda. Gera ainda um relatório das vendas de um determinado período que pode ser de um dia ou mais e também define os valores dos ingressos. Inicialmente foi formada uma massa de dados para geração desse relatório.
+<br><br>
+De início são apresentados o cabeçalho uma tela de entrada no sistema com matrícula, senha e botão de entrada.
+<br><br>
+<div style="background-color:051505;color:aaffcc;padding:20px">
+<br><br>
+<dir><dir>
+<b>Fundação do Museu da Cidade</b><br><br>
+Museu da Cidade de Igarassu - Ingressos<br>
+<hr>
+<br>
+<span>Igarassu, 30 de março de 2022 (quarta-feira)</span>
+<br><br>
+<table style="border:3px double;">
+<tr><td>Matrícula: </td><td> <input type='text' size=15 value=""></td></tr>
+<tr><td colspan=2 align='center'>
+<tr><td>Senha: </td><td> <input type='password' size=15 value=""></td></tr>
+<tr><td></td><td><button>Entrada</button></td></tr>
+</table>
+<font color='ff66aa'><span></span></font><br>
+</dir></dir>
+
+</div>
+<br><br>
+Inicialmente o sistema já deve ter um usuário administrador cadastrado com poder de atuar em todas as funções do sistema, tanto de pessoal quanto relatórios e vendas. Os usuários podem ter funções de operadores, que apenas realizam as vendas, quanto de administrador que define os preços dos ingressos, geram relatórios, administram os usuários do sistema e até mesmo podem atuar também com venda de ingressos.
+<br><br>
+Quando o usuário for utilizar o sistema pela primeira vez deve colocar sua matrícula e sua senha que devem ser atualizados para poder entrar no sistema. A senha é igual a matrícula. Portanto é importante que o primeiro uso seja feito imediatamente seguido ao cadastro do usuário no sistema. Ou o cadastro seja feito pouco tempo antes do uso. Deve ser utilizada a matrícula, a senha atual e assim dois campos para a nova senha, sendo mais uma para confirmação. E por fim um botão para atualização da senha.
+<br><br>
+<div style="background-color:051505;color:aaffcc;padding:20px">
+<table style='border:3px double;'>
+<tr><td>Senha Atual: </td><td> <input type='password' size=15 xplaceholder='Digite a Senha'></td></tr>
+<tr><td>Senha Nova: </td><td> <input type='password' size=15 xplaceholder='Digite a Senha'></td></tr>
+<tr><td>Confirmar Senha: </td><td> <input type='password' size=15 xplaceholder='Digite a Senha'></td></tr>
+<tr><td></td><td><button>Atualizar</button></td></tr></table>
+
+</div>
+<br><br>
+Para esta apresentação o sistema rejeitará as senhas com menos de 2 caracteres, se for a parte do nome ou se a confirmação não conferir. Serão mostradas as seguintes mensagens:<br><br>
+[Senha e confirmação são diferentes. Favor corrigir.]<br>
+[Senha muito curta. Precisa ter mais que 3 caracteres.]<br>
+[Senha não pode ser o nome ou parte do nome. Favor tentar outra.]<br><br>
+A depender do usuário, como foram definidas as suas funções no cadastro, serão mostrados os botões conforme suas respectivas funções.
+
+<br><br>
+<div style="background-color:051505;color:aaffcc;padding:20px">
+Para usuário operador:
+<br><br>
+<button>Venda de Ingressos</button>
+<button>Fim</button>
+<br><br><hr width="80%"><br>
+Para usuário administrador:
+<br><br>
+<button>Venda de Ingressos</button>
+<button>Relatório de vendas</button>
+<button>Valores dos Ingressos</button>
+<button>Usuários do sistema</button>
+<button onClick="sessao();">Fim</button>
+<br><br>
+</div>
+<br><br>
+Para a venda de ingressos, após clicar no respectivo botão surge a tela das vendas. São três tipos de ingressos. Um de Inteira, outro de Meia e outro Gratuito.
+<br><br>
+Os valores dos ingressos já devem estar definidos por um administrador.
+<br><br>
+E surgirá a seguinte tela de vendas.
+
+<br><br>
+<div style="background-color:051505;color:aaffcc;padding:20px;">
+<div xclass="area1" style="display:inline;">
+<b>Registro de Venda de Ingressos</b><br><br>
+<table class=tb1>
+  <tr class=tl0>
+    <td class=c1>Tipo</td>
+    <td>Quantidades</td>
+    <td>Valor Unit.</td>
+    <td>Valor a Pagar</td>
+    <td>Qtd. Ingressos(Dia)</td>
+  </tr>
+  <tr class=tl1>
+    <td class=c1>Inteira</td>
+    <td class=c1><input type="text" size=4 autocomplete="off"> ingresso(s)<br></td>
+    <td class=c1 align=right><span> </span></td>
+    <td class=c1 align=right><span class="ti"> </span></td>
+    <td class=c1 align=right><span class="ti"> </span></td>
+  </tr>
+  <tr class=tl2>
+    <td class=c1>Meia</td>
+    <td class=c1><input type="text" size=4 autocomplete="off"> ingresso(s)<br></td>
+    <td class=c1 align=right><span></span></td>
+    <td class=c1 align=right><span></span></td>
+    <td class=c1 align=right><span class="tm"></span></td>
+  </tr>
+  <tr class=tl1>
+    <td class=c1>Gratuita</td>
+    <td class=c1><input type="text" size=4 autocomplete="off"> ingresso(s)<br></td>
+    <td class=c1 align=right> - </td>
+    <td class=c1 align=right> - </td>
+    <td class=c1 align=right><span class="tg"></span>
+  </tr>
+  <tr class=tl2>
+    <td class=c1 colspan=2> N&uacute;mero de ingressos <span></span><input type="hidden" size=4 disabled></td>
+    <td class=c1 align=right>Valor Total </span></td>
+    <td class=c1 align=right><span class="tm"></span></td>
+    <td class=c1 align=right>Total &nbsp;&nbsp;&nbsp;&nbsp;<span class="tg"></span>
+  </tr>
+  <tr class=tl1>
+    <td class=c1> <button> Registrar </button></td>
+    <td class=c1 colspan=2></td>
+    <td class=c1 align=right> - </span></td>
+    <td class=c1 align=right> <button> Nova Venda </button></td>
+  </tr>
+</table>
+</div>
+</div>
+<br><br>
+E ao lado uma tela com as vendas do dia, com barra de rolagem quando chegar a 25 linhas de conte&uacute;do:
+<br><br>
+<div style="background-color:051505;color:aaffcc;padding:20px">
+<div xclass="area2">
+<b>Ingressos vendidos hoje - <br>Museu da Cidade de Igarassu</b>
+<table class=tb1>
+  <tr class=tl0>
+    <td class=c1 rowspan=2>
+	<div class="relat"><font color="ff5555"><b>**In&iacute;cio**</b></font></div>
+	<div class="relat">
+<table width="100%"border="0"><tbody><tr class="limpar4"><td colspan="2"><b>--- 08h009 --- </b></td><td align="right"><font color="333377"><i><b>N-1</b></i></font></td></tr><tr class="limpar1"><td>- Inteira:</td><td>3 ingresso(s).</td><td>- Valor:  24,00.</td></tr><tr class="limpar4"><td><b>- Total:</b> </td><td><b> ingresso(s).</b></td><td><b>Valor Total: 24,00.</b></td></tr></tbody></table><table width="100%" border="0"><tbody><tr class="lpar4"><td colspan="2"><b>--- 08h009 --- </b></td><td align="right"><font color="333377"><i><b>N-2</b></i></font></td></tr><tr class="lpar1"><td>- Inteira:</td><td>3 ingresso(s).</td><td>- Valor:  24,00.</td></tr><tr class="lpar2"><td>- Meia:</td><td>6 ingresso(s).</td><td>- Valor: 24,00.</td></tr><tr class="lpar3"><td>- Gratuita:</td><td>3 ingresso(s).</td><td>----</td></tr><tr class="lpar4"><td><b>- Total:</b> </td><td><b> 12ingresso(s).</b></td><td><b>Valor Total: 48,00. </b></td></tr></tbody></table><table width="100%" border="0"><tbody><tr class="limpar4"><td colspan="2"><b>--- 08h009 --- </b></td><td align="right"><font color="333377"><i><b>N-3</b></i></font></td></tr><tr class="limpar1"><td>- Inteira:</td><td>4 ingresso(s).</td><td>- Valor:  32,00. </td></tr><tr class="limpar2"><td>- Meia:</td><td>5 ingresso(s).</td><td>- Valor: 20,00. </td></tr><tr class="limpar3"><td>- Gratuita:</td><td>8 ingresso(s).</td><td>----</td></tr><tr class="limpar4"><td><b>- Total:</b> </td><td><b> 17 ingresso(s).</b></td><td><b>Valor Total: 52,00. </b></td></tr></tbody></table><table width="100%" border="0"><tbody><tr class="lpar4"><td colspan="2"><b>--- 08h010 --- </b></td><td align="right"><font color="333377"><i><b>N-4</b></i></font></td></tr><tr class="lpar1"><td>- Inteira:</td><td>1 ingresso(s).</td><td>- Valor: 8,00.</td></tr><tr class="lpar2"><td>- Meia:</td><td>2 ingresso(s).</td><td>- Valor: 8,00.</td></tr><tr class="lpar3"><td>- Gratuita:</td><td>1 ingresso(s).</td><td>----</td></tr><tr class="lpar4"><td><b>- Total:</b> </td><td><b>4 ingresso(s).</b></td><td><b>Valor Total: 16,00.</b></td></tr></tbody></table><table width="100%" border="0"><tbody><tr class="limpar4"><td colspan="2"><b>--- 08h013 --- </b></td><td align="right"><font color="333377"><i><b>N-5</b></i></font></td></tr><tr class="limpar1"><td>- Inteira:</td><td>3 ingresso(s).</td><td>- Valor:  24,00.</td></tr><tr class="limpar2"><td>- Meia:</td><td>5 ingresso(s).</td><td>- Valor: 20,00.</td></tr><tr class="limpar3"><td>- Gratuita:</td><td>2 ingresso(s).</td><td>----</td></tr><tr class="limpar4"><td><b>- Total:</b> </td><td><b> 10 ingresso(s).</b></td><td><b>Valor Total: 44,00.</b></td></tr></tbody></table><table width="100%" border="0"><tbody><tr class="lpar4"><td colspan="2"><b>--- 08h013 --- </b></td><td align="right"><font color="333377"><i><b>N-6</b></i></font></td></tr><tr class="lpar1"><td>- Inteira:</td><td>1 ingresso(s).</td><td>- Valor:  8,00.</td></tr></tbody></table>
+	</div>
+	</td>
+<td valign=top bgcolor='225522'><div style='transform:rotate(180deg);color:ffddaa;'>V</div></td></tr><tr><td valign=bottom bgcolor='225522'><span>V</span></td></tr></table>
+</div>
+</div> 
+<br><br>
+Para evitar algum desentendimento nos ingressos com quem comprou os ingressos pode ser mostrada a compra na tela de forma que seja apresentada ao cliente. Nesta tela anterior onde são mostradas os ingressos vendidos, basta clicar na compra que a esta tela do dia será apagada e mostrada apenas a compra feita. E ali a venda dos ingressos pode ser cancelada. Para cancelar a venda pode ser clicado no botão de cancelar. Depois disto, para continuarem as vendas basta clicar nesta parte da tela que apresentou a venda que volta a tela das vendas do dia.
+<br><br>
+<div style="background-color:051505;color:aaffcc;padding:20px">
+<table width=320><tbody><tr class="lpar4"><td colspan="2"><b>--- 08h009 --- </b></td><td align="right"><font color="333377"><i><b>N-2</b></i></font></td></tr><tr class="lpar1"><td>- Inteira:</td><td>3 ingresso(s).</td><td>- Valor: 24,00.</td></tr><tr class="lpar2"><td>- Meia:</td><td>6 ingresso(s).</td><td>- Valor: 24,00.</td></tr><tr class="lpar3"><td>- Gratuita:</td><td>3 ingresso(s).</td><td>----</td></tr><tr class="lpar4"><td><b>- Total:</b> </td><td><b>12 ingresso(s).</b></td><td><b>Valor Total: 48,00.</b></td></tr></tbody></table>
+<button onClick=\"return cancelar();\">Cancelar a Venda</button>
+</div>
+<br><br>
+Ao encerrarem as vendas por aquele usuário, seja ao final ou pela troca de usuário, ou mesmo para observação de um administrador, clicar no botão "Fim" e voltará a tela de entrada no sistema.
+<br><br>
+Quando o administrador entra no sistema outras operações podem ser feitas. Uma delas é o relatório de vendas que mostra as vendas realizadas num período a ser definido. Será apresentada a solicitação das datas de início e fim.
+
+<br><br>
+<div style="background-color:051505;color:aaffcc;padding:20px">
+<br><table class='tb1'>
+<tr class='t10'>
+<td class='c1'>
+Período de <input type='date' placeholder='dd/mm/aaaa'> até <input type='date' placeholder='dd/mm/aaaa'> <button>Relatório</button>
+</td>
+</tr>
+</table>
+<br>
+</div>
+<br><br>
+Para esta apresentação foi preenchida uma base para a última semana apenas. Um relatório assim com, por exemplo, dois dias será apresentado assim:
+<br><br>
+<div style="background-color:051505;color:aaffcc;padding:20px">
+
+<button> Imprimir </button><br><br><span><table width=100%><tr><td width=50><table class="tb1"><tbody><tr><td rowspan="3" bgcolor="aaaaff" style="color:222255;">&nbsp;&nbsp;&nbsp;</td><td rowspan="2" bgcolor="777799"><br><hr style="border-color:aaaaff;border-style:groove;border-width:4px" width="50%" align="right">ogo<b style="font-size:18px"><i>M</i></b>arca</td></tr><tr></tr><tr><td bgcolor="a0a0f0"><br></td></tr></tbody></table><td width=5></td><td><td><font class='c01'><b>Fundação do Museu da Cidade</b></font>&nbsp;<br><font class='c02'>Museu da Cidade de Igarassu - MUCIG</font>&nbsp;<br><table width='100%' cellpadding=0 cellspacing=0><tr><td><font class='c02'>Relatório de Vendas de Ingressos<br>Período de 2022-04-03 até 2022-04-04</font></td><td valign='bottom' align='right'><font class='c02'>Página 1/1&nbsp;&nbsp;</font></td></tr></table></td></tr></table><br><br><table class='tb1'> <tr><td colspan=10>Dia: 03/04/2022 &nbsp;&nbsp;<br>  Valor da Inteira: R$8,00 &nbsp;&nbsp; Valor da Meia: R$4,00</td></tr><tr class='tl0'><td align=right class='c1'> Hora &nbsp;&nbsp;</td><td align=right class='c1'> &nbsp;Número &nbsp;&nbsp;</td><td align=right class='c1'> &nbsp;Inteiras &nbsp;&nbsp;</td><td align=right class='c1'> &nbsp;Valor (I) R$ &nbsp;&nbsp;</td><td align=right class='c1'> &nbsp;Meias &nbsp;&nbsp;</td><td align=right class='c1'> &nbsp;Valor (M) R$ &nbsp;&nbsp;</td><td align=right class='c1'> &nbsp;Gratuitas &nbsp;&nbsp;</td><td align=right class='c1'> &nbsp;Vendidos &nbsp;&nbsp;</td><td align=right class='c1'> &nbsp;Valor (T) R$ &nbsp;&nbsp;</td><td align=right class='c1'> &nbsp;Cancelamentos &nbsp;&nbsp;</td></tr><tr class='tl1' valign=top><td align=right class='c1'>09h45 &nbsp;&nbsp;</td><td align='right' class='cl1'>001 &nbsp;&nbsp;</td><td align='right' class='cl1'>3  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;24,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>--  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp; ---   &nbsp;&nbsp;</td><td align='right' class='cl1'>--  &nbsp;&nbsp;</td><td align='right' class='cl1'>3  &nbsp;&nbsp;</td><td align='right' class='cl1'> 24,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>  &nbsp;&nbsp;</td></tr><tr class='tl2' valign=top><td align=right class='c1'> &nbsp;&nbsp;</td><td align='right' class='cl1'>002 &nbsp;&nbsp;</td><td align='right' class='cl1'>--  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp; ---   &nbsp;&nbsp;</td><td align='right' class='cl1'>2  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;8,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>--  &nbsp;&nbsp;</td><td align='right' class='cl1'>2  &nbsp;&nbsp;</td><td align='right' class='cl1'> 8,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>  &nbsp;&nbsp;</td></tr><tr class='tl1' valign=top><td align=right class='c1'> &nbsp;&nbsp;</td><td align='right' class='cl1'>003 &nbsp;&nbsp;</td><td align='right' class='cl1'>1  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;8,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>--  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp; ---   &nbsp;&nbsp;</td><td align='right' class='cl1'>--  &nbsp;&nbsp;</td><td align='right' class='cl1'>1  &nbsp;&nbsp;</td><td align='right' class='cl1'> 8,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>  &nbsp;&nbsp;</td></tr><tr class='tl2' valign=top><td align=right class='c1'> &nbsp;&nbsp;</td><td align='right' class='cl1'>004 &nbsp;&nbsp;</td><td align='right' class='cl1'>4  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;32,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>--  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp; ---   &nbsp;&nbsp;</td><td align='right' class='cl1'>--  &nbsp;&nbsp;</td><td align='right' class='cl1'>4  &nbsp;&nbsp;</td><td align='right' class='cl1'> 32,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>  &nbsp;&nbsp;</td></tr><tr class='tl1' valign=top><td align=right class='c1'> &nbsp;&nbsp;</td><td align='right' class='cl1'>005 &nbsp;&nbsp;</td><td align='right' class='cl1'>3  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;24,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>--  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp; ---   &nbsp;&nbsp;</td><td align='right' class='cl1'>--  &nbsp;&nbsp;</td><td align='right' class='cl1'>3  &nbsp;&nbsp;</td><td align='right' class='cl1'> 24,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>  &nbsp;&nbsp;</td></tr><tr class='tl2' valign=top><td align=right class='c1'> &nbsp;&nbsp;</td><td align='right' class='cl1'>006 &nbsp;&nbsp;</td><td align='right' class='cl1'>1  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;8,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>5  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;20,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>4  &nbsp;&nbsp;</td><td align='right' class='cl1'>10  &nbsp;&nbsp;</td><td align='right' class='cl1'> 28,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>  &nbsp;&nbsp;</td></tr><tr class='tl1' valign=top><td align=right class='c1'> &nbsp;&nbsp;</td><td align='right' class='cl1'>007 &nbsp;&nbsp;</td><td align='right' class='cl1'>6  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;48,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>6  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;24,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>--  &nbsp;&nbsp;</td><td align='right' class='cl1'>12  &nbsp;&nbsp;</td><td align='right' class='cl1'> 72,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>  &nbsp;&nbsp;</td></tr><tr class='tl2' valign=top><td align=right class='c1'>16h33 &nbsp;&nbsp;</td><td align='right' class='cl1'>008 &nbsp;&nbsp;</td><td align='right' class='cl1'>1  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;8,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>--  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp; ---   &nbsp;&nbsp;</td><td align='right' class='cl1'>--  &nbsp;&nbsp;</td><td align='right' class='cl1'>1  &nbsp;&nbsp;</td><td align='right' class='cl1'> 8,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>  &nbsp;&nbsp;</td></tr><tr class='tl1' valign=top><td align=right class='c1'>16h34 &nbsp;&nbsp;</td><td align='right' class='cl1'>009 &nbsp;&nbsp;</td><td align='right' class='cl1'>1  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;8,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>4  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;16,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>--  &nbsp;&nbsp;</td><td align='right' class='cl1'>5  &nbsp;&nbsp;</td><td align='right' class='cl1'> 24,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>  &nbsp;&nbsp;</td></tr><tr class='tl2' valign=top><td align=right class='c1'> &nbsp;&nbsp;</td><td align='right' class='cl1'>010 &nbsp;&nbsp;</td><td align='right' class='cl1'>--  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp; ---   &nbsp;&nbsp;</td><td align='right' class='cl1'>5  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;20,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>--  &nbsp;&nbsp;</td><td align='right' class='cl1'>5  &nbsp;&nbsp;</td><td align='right' class='cl1'> 20,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>  &nbsp;&nbsp;</td></tr><tr class='tl1' valign=top><td align=right class='c1'>16h53 &nbsp;&nbsp;</td><td align='right' class='cl1'>011 &nbsp;&nbsp;</td><td align='right' class='cl1'>3  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;24,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>3  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;12,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>4  &nbsp;&nbsp;</td><td align='right' class='cl1'>10  &nbsp;&nbsp;</td><td align='right' class='cl1'> 36,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>  &nbsp;&nbsp;</td></tr><tr class='tl2' valign=top><td align=right class='c1'> &nbsp;&nbsp;</td><td align='right' class='cl1'>012 &nbsp;&nbsp;</td><td align='right' class='cl1'>2  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;16,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>1  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;4,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>6  &nbsp;&nbsp;</td><td align='right' class='cl1'>9  &nbsp;&nbsp;</td><td align='right' class='cl1'> 20,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>  &nbsp;&nbsp;</td></tr><tr class='tl1' valign=top><td align=right class='c1'> &nbsp;&nbsp;</td><td align='right' class='cl1'>013 &nbsp;&nbsp;</td><td align='right' class='cl1'>1  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;8,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>2  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;8,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>3  &nbsp;&nbsp;</td><td align='right' class='cl1'>6  &nbsp;&nbsp;</td><td align='right' class='cl1'> 16,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>  &nbsp;&nbsp;</td></tr><tr class='tl2' valign=top><td align=right class='c1'> &nbsp;&nbsp;</td><td align='right' class='cl1'>014 &nbsp;&nbsp;</td><td align='right' class='cl1'>2  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;16,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>1  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;4,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>1  &nbsp;&nbsp;</td><td align='right' class='cl1'>4  &nbsp;&nbsp;</td><td align='right' class='cl1'> 20,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>  &nbsp;&nbsp;</td></tr><tr class='tl1' valign=top><td align=right class='c1'> &nbsp;&nbsp;</td><td align='right' class='cl1'>015 &nbsp;&nbsp;</td><td align='right' class='cl1'>1  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;8,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>2  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;8,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>1  &nbsp;&nbsp;</td><td align='right' class='cl1'>4  &nbsp;&nbsp;</td><td align='right' class='cl1'> 16,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>  &nbsp;&nbsp;</td></tr><tr class='tl2' valign=top><td align=right class='c1'> &nbsp;&nbsp;</td><td align='right' class='cl1'>016 &nbsp;&nbsp;</td><td align='right' class='cl1'>2  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;16,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>1  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;4,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>1  &nbsp;&nbsp;</td><td align='right' class='cl1'>4  &nbsp;&nbsp;</td><td align='right' class='cl1'> 20,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>  &nbsp;&nbsp;</td></tr><tr class='tlt' valign=top><td class='c1'> Total do dia &nbsp;&nbsp;<br><table><tr><td >03/04/2022 &nbsp;&nbsp;</td></tr></table></td><td class='c1'> - &nbsp;&nbsp;</td><td class='c1' align='right'> 31 &nbsp;&nbsp;</td><td class='c1' align='right'> 248,00 &nbsp;&nbsp;</td><td class='c1' align='right'> 32 &nbsp;&nbsp;</td><td class='c1'> 128,00 &nbsp;&nbsp;</td><td class='c1' align='right'>20 &nbsp;&nbsp;</td><td class='c1' align='right'><b>83 &nbsp;&nbsp;</td><td class='c1' align='right'> 376,00 &nbsp;&nbsp;</td><td class='c1'> </td></tr><tr bgcolor='bbffdd'><td colspan=10><hr style='border-style:double;'></td></tr> <tr><td colspan=10>Dia: 04/04/2022 &nbsp;&nbsp;<br>  Valor da Inteira: R$8,00 &nbsp;&nbsp; Valor da Meia: R$4,00</td></tr><tr class='tl0'><td align=right class='c1'> Hora &nbsp;&nbsp;</td><td align=right class='c1'> &nbsp;Número &nbsp;&nbsp;</td><td align=right class='c1'> &nbsp;Inteiras &nbsp;&nbsp;</td><td align=right class='c1'> &nbsp;Valor (I) R$ &nbsp;&nbsp;</td><td align=right class='c1'> &nbsp;Meias &nbsp;&nbsp;</td><td align=right class='c1'> &nbsp;Valor (M) R$ &nbsp;&nbsp;</td><td align=right class='c1'> &nbsp;Gratuitas &nbsp;&nbsp;</td><td align=right class='c1'> &nbsp;Vendidos &nbsp;&nbsp;</td><td align=right class='c1'> &nbsp;Valor (T) R$ &nbsp;&nbsp;</td><td align=right class='c1'> &nbsp;Cancelamentos &nbsp;&nbsp;</td></tr><tr class='tl1' valign=top><td align=right class='c1'>08h09 &nbsp;&nbsp;</td><td align='right' class='cl1'>001 &nbsp;&nbsp;</td><td align='right' class='cl1'>3  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;24,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>--  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp; ---   &nbsp;&nbsp;</td><td align='right' class='cl1'>--  &nbsp;&nbsp;</td><td align='right' class='cl1'>3  &nbsp;&nbsp;</td><td align='right' class='cl1'> 24,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>  &nbsp;&nbsp;</td></tr><tr class='tl2' valign=top><td align=right class='c1'> &nbsp;&nbsp;</td><td align='right' class='cl1'>002 &nbsp;&nbsp;</td><td align='right' class='cl1'>3  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;24,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>6  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;24,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>3  &nbsp;&nbsp;</td><td align='right' class='cl1'>12  &nbsp;&nbsp;</td><td align='right' class='cl1'> 48,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>  &nbsp;&nbsp;</td></tr><tr class='tl1' valign=top><td align=right class='c1'> &nbsp;&nbsp;</td><td align='right' class='cl1'>003 &nbsp;&nbsp;</td><td align='right' class='cl1'>4  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;32,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>5  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;20,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>8  &nbsp;&nbsp;</td><td align='right' class='cl1'>17  &nbsp;&nbsp;</td><td align='right' class='cl1'> 52,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>  &nbsp;&nbsp;</td></tr><tr class='tl2' valign=top><td align=right class='c1'>08h10 &nbsp;&nbsp;</td><td align='right' class='cl1'>004 &nbsp;&nbsp;</td><td align='right' class='cl1'>1  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;8,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>2  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;8,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>1  &nbsp;&nbsp;</td><td align='right' class='cl1'>4  &nbsp;&nbsp;</td><td align='right' class='cl1'> 16,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>  &nbsp;&nbsp;</td></tr><tr class='tl1' valign=top><td align=right class='c1'>08h13 &nbsp;&nbsp;</td><td align='right' class='cl1'>005 &nbsp;&nbsp;</td><td align='right' class='cl1'>3  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;24,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>5  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;20,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>2  &nbsp;&nbsp;</td><td align='right' class='cl1'>10  &nbsp;&nbsp;</td><td align='right' class='cl1'> 44,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>  &nbsp;&nbsp;</td></tr><tr class='tl2' valign=top><td align=right class='c1'> &nbsp;&nbsp;</td><td align='right' class='cl1'>006 &nbsp;&nbsp;</td><td align='right' class='cl1'>1  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;8,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>1  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;4,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>1  &nbsp;&nbsp;</td><td align='right' class='cl1'>3  &nbsp;&nbsp;</td><td align='right' class='cl1'> 12,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>  &nbsp;&nbsp;</td></tr><tr class='tl1' valign=top><td align=right class='c1'>08h16 &nbsp;&nbsp;</td><td align='right' class='cl1'>007 &nbsp;&nbsp;</td><td align='right' class='cl1'>2  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;16,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>3  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;12,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>3  &nbsp;&nbsp;</td><td align='right' class='cl1'>8  &nbsp;&nbsp;</td><td align='right' class='cl1'> 28,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>  &nbsp;&nbsp;</td></tr><tr class='tl2' valign=top><td align=right class='c1'> &nbsp;&nbsp;</td><td align='right' class='cl1'>008 &nbsp;&nbsp;</td><td align='right' class='cl1'>4  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;32,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>5  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;20,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>6  &nbsp;&nbsp;</td><td align='right' class='cl1'>15  &nbsp;&nbsp;</td><td align='right' class='cl1'> 52,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>  &nbsp;&nbsp;</td></tr><tr class='tl1' valign=top><td align=right class='c1'> &nbsp;&nbsp;</td><td align='right' class='cl1'>009 &nbsp;&nbsp;</td><td align='right' class='cl1'>8  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;64,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>4  &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;16,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>6  &nbsp;&nbsp;</td><td align='right' class='cl1'>18  &nbsp;&nbsp;</td><td align='right' class='cl1'> 80,00  &nbsp;&nbsp;</td><td align='right' class='cl1'>  &nbsp;&nbsp;</td></tr><tr class='tlt' valign=top><td class='c1'> Total do dia &nbsp;&nbsp;<br>2022-04-04 &nbsp;&nbsp;</td><td class='c1'> - &nbsp;&nbsp;</td><td align='right' class='cl1'> 29 &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;232,00 &nbsp;&nbsp;</td><td align='right' class='cl1'> 31 &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;124,00 &nbsp;&nbsp;</td><td class='c1'>30 &nbsp;&nbsp;</td><td align='right' class='cl1'>90 &nbsp;&nbsp;</td><td align='right' class='cl1'> &nbsp;&nbsp;356,00 &nbsp;&nbsp; </td><td class='c1'> </td></tr><tr bgcolor='bbffdd'><td colspan=10><hr style='border-style:double;'></td></tr><tr class='ttt' valign=top><td align=center class='c1'><b>Total do &nbsp;<br>Período &nbsp;<br>2022-04-03 &nbsp;<br>a &nbsp;<br><b>2022-04-04</b> &nbsp;</td><td class='c1'> </td><td align='right' class='cl1'> <b>60</b> &nbsp;&nbsp;</td><td align='right' class='cl1'> <b>480,00</b> &nbsp;&nbsp;</td><td align='right' class='cl1'> <b>63</b> &nbsp;&nbsp;</td><td align='right' class='cl1'> <b>252,00</b> &nbsp;&nbsp;</td><td align='right' class='cl1'><b>50</b> &nbsp;&nbsp; </td><td align='right' class='cl1'><b>173</b> &nbsp;&nbsp;</td><td align='right' class='cl1'> <b>732,00</b> &nbsp;&nbsp;</td><td class='c1'> </td></tr></table></span>
+
+</div>
+<br><br>
+Para definir os valores de ingressos à partir de uma data, clicar o respectivo botão e preencher a solicitação da data na tela:
+<br><br>
+<div style="background-color:051505;color:aaffcc;padding:20px">
+<table class=tb1><tr class=tl0><td class=c1 colspan=2>A partir do dia <input type='date'><br></td></tr></table>
+
+</div>
+<br><br>
+Assim surgira uma requisição para preencher os novos valores dos ingressos com os últimos valores definidos:
+<br><br>
+<div style="background-color:051505;color:aaffcc;padding:20px">
+<table class='tb1'><tr class='tl0'><td align=right class='c1'> A partir do dia </td><td align=right class='c1'> <input type='date'><br> </td></tr><tr class='tl1' valign=top><td align=right class='c1'> &nbsp;&nbsp;Tipo&nbsp;&nbsp; </td><td class='c1'> &nbsp;&nbsp;Valores&nbsp;&nbsp; </td></tr><tr class='tl2' valign=top><td align=right class='c1'> &nbsp;&nbsp;Inteira&nbsp;&nbsp; </td><td class='c1'> R$<input type='text' size=7 value=8,00>&nbsp;&nbsp; </td></tr><tr class='tl1' valign=top><td align=right class='c1'> &nbsp;&nbsp;Meia&nbsp;&nbsp; </td><td class='c1'> R$<input type='text' size=7 value=4,00>&nbsp;&nbsp; </td></tr><tr class='tl2' valign=top><td align=right class='c1'> <button> Salvar </button>&nbsp;&nbsp;</td><td class='c1'> &nbsp<button> Cancelar </button>&nbsp;&nbsp; </td></tr></table>
+</div>
+<br><br>
+Para cadastrar usuários e definir suas funções no sistema, clicar no botão de Usuários do Sistema e aparecerá uma tela mostrando os usuários e suas funções que pode ser de Administrador, Operador e se está em atividade ou Suspenso. Mais abaixo será mostrada uma requisição de edição de usuário ou inclusão de mais outro.
+<br><br>
+<div style="background-color:051505;color:aaffcc;padding:20px">
+<table class='tb1'><tr class='tl0'><td align=right class='c1'> Matrícula </td><td align=right class='c1'> Nome &nbsp;&nbsp;&nbsp;&nbsp;</td><td align=right class='c1'> Atividade </td></tr><tr class='tl2' valign=top><td class='c1'>123</td><td class='c1'>Luciano</td><td class='c1'>&nbsp;Administrador&nbsp;</td></tr><tr class='tl1' valign=top><td class='c1'>124</td><td class='c1'>João</td><td class='c1'>&nbsp;Operador&nbsp;</td></tr><tr class='tl2' valign=top><td class='c1'>125</td><td class='c1'>Maria</td><td class='c1'>&nbsp;Operador&nbsp;</td></tr><tr class='tl1' valign=top><td class='c1'>126</td><td class='c1'>José Cláudio</td><td class='c1'>&nbsp;Suspenso&nbsp;</td></tr></table><br><br><table class='tb1'><tr class='tl1'><td class='c1'>Matrícula <input type='text' placeholder='Novo' size=5><button>Editar</button></td></tr></table>
+</div>
+<br><br>
+Ao se definir uma matrícula para edição ou inclusão de cada usuário, virá uma tela com os dados necessários. Se o usuário já existir seus dados serão mostrados para edição. Se não for cadastrado a tela aparecerá com os campos em branco para preenchimento.
+<br><br>
+<div style="background-color:051505;color:aaffcc;padding:20px">
+<table class='tb1'>
+<tr class='tl0'><td class='c1'>
+Matrícula </td><td><input type="text" size=5></td></tr>
+<tr class='tl2'><td class='c1'>
+Nome </td><td><input type='text' size=20></td></tr>
+<tr class='tl1'><td class='c1'>
+Atividade </td><td>
+<input type='radio' name='xadused' value='A'> Administrador
+<input type='radio' name='xadused' value='O'> Operador;
+<input type='radio' name='xadused' value='X'> Desativado;
+</td></tr>
+<tr class='tl1'><td class='c1'>
+<button>Salvar</button></td><td><button>Cancelar</button>
+</table>
+
+</div>
+
+</div>
+</dir></dir></dir>
+<!-- Apresentação -->
+<!-- Apresentação -->
+<!-- Apresentação -->
+
+
+<br><br>
+<dir><dir>
+<div id="telacab" style="display:none;">
+<b><b>Fundação do Museu da Cidade</b></b><br><br>
+Museu da Cidade de Igarassu - Venda de Ingressos<br>
+<hr>
+<br>
+</div>
+<div id="telaini" style="display:none;">
+<span id="iini"></span>
+<br><br>
+<form name="fxini">
+<table style="border:3px double;">
+<tr><td>Matrícula: </td><td> <input type='text' size=15 name='matrc' id="imatr" onFocus="tiramsg();"></td></tr>
+<tr><td colspan=2 align='center'>
+<tr><td>Senha: </td><td> <input type='password' size=15 name='senha' id="isenha"  onFocus="tiramsg();"></td></tr>
+<tr><td></td><td><button onClick="return iniativ();">Entrada</button></td></tr>
+</table>
+</form>
+<font color='ffeedd'><span id="msgi"></span></font><br>
+</div>
+<div id="telatrs" style="display:none;">
+<form name="fxtrs">
+<table style='border:3px double;'>
+<tr><td>Senha Atual: </td><td> <input type='password' size=15 name='senha' xplaceholder='Digite a Senha'></td></tr>
+<tr><td>Senha Nova: </td><td> <input type='password' size=15 name='senhan' xplaceholder='Digite a Senha'></td></tr>
+<tr><td>Confirmar Senha: </td><td> <input type='password' size=15 name='senhar' xplaceholder='Digite a Senha'></td></tr>
+<tr><td></td><td><button onClick='return trsenha();'>Atualizar</button></td></tr></table>
+</form>
+<font color='ffeedd'><span id="msgt"></span></font><br>
+</div>
+<div id="telaoper" style="display:none;">
+<div class="opad" id="opcoes">
+<button onClick="return vendadia();">Venda de Ingressos</button>
+<span id="bots"></span>
+<button onClick="sessao();">Fim</button>
+</div>
+<form name="fx">
+<div class="area1" id="reging">
+<b>Registro de Venda de Ingressos</b><br><br>
+<table class=tb1>
+  <tr class=tl0>
+    <td class=c1>Tipo</td>
+    <td>Quantidades</td>
+    <td>Valor Unit.</td>
+    <td>Valor a Pagar</td>
+    <td>Qtd. Ingressos(Dia)</td>
+  </tr>
+  <tr class=tl1>
+    <td class=c1>Inteira</td>
+    <td class=c1><input type="text" size=4 name="iqt" autocomplete="off" onBlur="return ci(this,1);"> ingresso(s)<br></td>
+    <!--td class=c1 align=right><?php echo $vintx; ?> </span></td>
+    <td class=c1 align=right><span id="vli" class="ti"> </span></td>
+    <td class=c1 align=right><span id="toti" class="ti"><?php echo $tint; ?> </span></td-->
+    <td class=c1 align=right><span id="vintsp"> </span></td>
+    <td class=c1 align=right><span id="vli" class="ti"> </span></td>
+    <td class=c1 align=right><span id="toti" class="ti"> <!--?php echo $tint; ?--> </span></td>
+  </tr>
+  <tr class=tl2>
+    <td class=c1>Meia</td>
+    <td class=c1><input type="text" size=4 name="mqt" autocomplete="off" onBlur="return ci(this,2);"> ingresso(s)<br></td>
+    <!--td class=c1 align=right><?php echo $vmeiax ?></span></td>
+    <td class=c1 align=right><span id="vlm" class="tm"></span></td>
+    <td class=c1 align=right><span id="totm" class="tm"><?php echo $tmeia; ?></span></td-->
+    <td class=c1 align=right><span id="vmeiasp"></span></td>
+    <td class=c1 align=right><span id="vlm" class="tm"></span></td>
+    <td class=c1 align=right><span id="totm" class="tm"><!--?php echo $tmeia; ?--></span></td>
+  </tr>
+  <tr class=tl1>
+    <td class=c1>Gratuita</td>
+    <td class=c1><input type="text" size=4 name="gqt" autocomplete="off" onBlur="return ci(this,3);"> ingresso(s)<br></td>
+    <td class=c1 align=right> - </td>
+    <td class=c1 align=right> - </td>
+    <td class=c1 align=right><span id="totg" class="tg"><!--?php echo $tgrat; ?--></span>
+  </tr>
+  <tr class=tl2>
+    <td class=c1 colspan=2> N&uacute;mero de ingressos <span id="numing"></span><input type="hidden" name="numi" size=4 disabled></td>
+    <td class=c1 align=right>Valor Total </span></td>
+    <td class=c1 align=right><span id="vti" class="tm"></span></td>
+    <td class=c1 align=right>Total &nbsp;&nbsp;&nbsp;&nbsp;<span id="tot" class="tg"><!--?php echo $total; ?--></span>
+  </tr>
+  <tr class=tl1>
+    <td class=c1> <button onClick="return rx();"> Registrar </button></td>
+    <td class=c1 colspan=2></td>
+    <td class=c1 align=right> - </span></td>
+    <td class=c1 align=right> <button onClick="return novavenda();"> Nova Venda </button></td>
+  </tr>
+</table>
+</div>
+<input type="hidden" name="tint">
+<input type="hidden" name="tmeia">
+<input type="hidden" name="tgrat">
+<input type="hidden" name="total">
+</form>
+<div id='valores' class='area1'>
+<form name="fv">
+<b>Valores dos Ingressos - MUCIG</b><br><br>
+<span id=valing>
+</span>
+</form>
+</div>
+<br><br>
+<div id="tvenda" class="area3">
+<table class="tb1">
+  <tr class=tl0>
+    <td class="tl0" align="center"><font color="225522"><b>Apresentação da Venda Selecionada</b></font></td>
+  </tr>
+  <tr>
+	<td class=tlv>
+	<form name='fm'>
+	<span id="venda" onClick="return fmostra();"></span>
+	<span id="cancelando"></span>
+	</form>
+	</td>
+  </tr>
+</table>
+</div> 
+<div id="tabrel" class="area2">
+<b>Ingressos vendidos hoje - <!--?php echo $hojec; ?--><br>Museu da Cidade de Igarassu</b>
+<table class=tb1>
+  <tr class=tl0>
+    <td class=c1 rowspan=1>
+	<div class="relat" id="nada">Nenhum Ingresso Vendido</div>
+    <div class="relat" id="regdia">
+	<!--?php
+	echo $reldia;
+	?-->
+	</div>
+	</td>
+  </tr>
+</table>
+</div>
+<font color="eeeeee"><span id="sode"></span></font>
+<div class="area1" id="reldias" style="visibility:hidden"></div>
+<div id='pessoal' class='area1' style="visibility:hidden"></div>
+
+</div></body>
+</html>
