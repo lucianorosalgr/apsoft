@@ -1,0 +1,2629 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<script>
+//////////////////
+
+// A função [sbem] separa os itens relacionados ao retorno da consulta SQL no AJAX.
+// (lbem) - o registro que contem os itens.
+// (divc) - identificador dos itens.
+// ex:
+// (a dado1 a) (b dado2 b) (c dado3 c);
+// -a-, -b- e -c- são os identificadores de cada dado.
+function sbem(lbem,divc) {
+	inibem = lbem.indexOf("("+divc+" ")+divc.length+2;
+	fimbem = lbem.indexOf(" "+divc+")")-inibem;
+	return lbem.substr(inibem,fimbem);
+}
+/////////////////
+
+// A função [ordenar] é para por em ordem a lista com os anos e as compras de determinado tipo de bem.
+// (x) - Lista com os anos, quantidade e valores das compras.
+// (y) - Identificador do início de cada registro da lista.
+// Se tiver m='s' indica que o ano está na consulta e será retornado pra mostrar.
+// Se tiver m='n' indica que o ano não está na consulta e não será retornado pra mostrar.
+function ordenar(x,y) {
+	yt = y.length;
+	lo = [];
+	ix = 0;
+	fx = x.indexOf(y,ix+1);
+	while (fx > -1) {
+		al = x.substr(ix,fx-ix);
+		if (al.indexOf("m='s'") > 0) {
+			tal = al.length;
+			lo.push(al);
+		}
+		ix = fx;
+		fx = x.indexOf(y,ix+1);
+	}
+	al = x.substr(ix);
+	if (al.indexOf("m='s'") > 0) {
+		tal = al.length;
+		lo.push(al);
+	}
+	lo.sort();
+	ix = 0;
+	while (ix < lo.length) {
+		iy = (ix%2)+1;
+		lo[ix] = lo[ix].replace("class='tbd'","class='tbd"+iy+"'");
+		ix = ix+1;
+	}
+	return lo.join('');
+}
+///////////////////////////////////
+
+// A função [restot] é para formar os dados para o Resumo dos Bens Adquiridos, com o resumo dos totais de cada tipo de bem.
+// (a) indica o ano que está consulta.
+// (sod) indica se o ano foi incluído para acrescentar (valor 1) ou excluído para retirar (valor 2) dos dados consultados.
+// indr - índice para os registros de totais de compra de um item por ano.
+// nomer - nome do tipo de bem das compras por ano.
+// nx  - nome do tipo de bem sem os elementos "(=)" que delimitam o nome.
+// anor - ano indicando a compra do tipo de bem.
+// qtdr - quantidade do tipo de bem no ano.
+// valr - valores pagos na aquisição do tipo de bem no ano.
+// nomet - nome do tipo de bem para indicar os totais da consulta.
+// qtdt - totais das quantidades do tipo de bem nos anos indicados.
+// qtdt - totais dos valores do tipo de bem nos anos indicados.
+
+function restot(a,sod){
+	indr = anor.indexOf(a);
+	ordem = 0;
+	while (indr > -1) {
+		indt = nomet.indexOf(nomer[indr]);
+		// indt < 0 indica que o tipo do bem está sendo registrado pela primeira vez formando uma área da tela para ser exibido.
+		// se indt não for < 0 indica que a área já foi formada.
+		if (indt < 0) {
+			indt = nomet.length;
+			bdet = "bt"+indt;
+			ltot.push("");
+			//ltot2.push("");
+			nx = nomer[indr].replace("(=)","").replace("(=)","");
+			ltot[indt] = ltot[indt]+"<span id='tot"+indt+"'><br><dir><dir><table class='tbx'><tr valign='top'><td width=500>Tipo do Bem</td><td width=85 align='center'>Quantidade<br>Total</td><td width=140 align='right'>Valor Total dos Bens&nbsp;&nbsp;<br>na Aquisição (R$)&nbsp;&nbsp;</td></tr>";
+			ltot[indt] = ltot[indt]+"<tr class='l3'><td>&nbsp;"+nx+"&nbsp;&nbsp;</td><td align='right'>(QT*)&nbsp;&nbsp;</td><td align='right'>(VL*)&nbsp;&nbsp;</td></tr>"; 
+			ltot[indt] = ltot[indt] + "<tr><td align=right colspan=3><table align='right'><tr><td><div class='tbd2'><div class='c85' align='center'> A N O&nbsp;&nbsp;</div><div class='c85'>Qtd. no Ano&nbsp;&nbsp;</div><div class='c140' align='right'>Valor no Ano(R$)&nbsp;&nbsp;</div></div>(R*T)</td></tr></table></td></tr></table></dir></dir></span>";
+			nomet.push(nomer[indr]);
+			qtdt.push(0);
+			valt.push(0);
+			linrt.push("");
+			ordem = 1;
+		} else {
+			document.getElementById("relacoes").style.display = "inline";
+			document.getElementById("tot"+indt).style.display = "inline";
+		}
+		if (sod == 1) {
+			qtdt[indt] = qtdt[indt]+qtdr[indr];
+			valt[indt] = valt[indt]+valr[indr];
+			if (linrt[indt].indexOf("ano='"+a+"'") < 0){
+				ordem = 1;
+				clx = linrt[indt]+"ano=";
+				clx = (clx.split("ano=").length%2)+1;
+				linrt[indt] = linrt[indt]+"<div ano='"+a+"' class='tbd"+clx+"' m='s'><div class='c85' align='center'>"+a+"&nbsp;&nbsp;</div><div class='c85' align='right'>"+qtdr[indr]+"&nbsp;&nbsp;</div><div class='c140' align='right'>"+valr[indr].toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2})+"&nbsp;&nbsp;</div></div>";
+			} else {
+				ia = linrt[indt].indexOf("ano='"+a+"'");
+				linrt[indt] = linrt[indt].substr(0,ia)+linrt[indt].substr(ia).replace("m='n'","m='s'");
+				lrt = ordenar(linrt[indt],"<div ano");
+				lltot = ltot[indt].replace("(R*T)",lrt);
+				lltot = lltot.replace("(QT*)",qtdt[indt]).replace("(VL*)",valt[indt].toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2}));
+				document.getElementById("tot"+indt).innerHTML = lltot;
+			}
+		} else {
+			qtdt[indt] = qtdt[indt]-qtdr[indr];
+			valt[indt] = valt[indt]-valr[indr];
+			ia = linrt[indt].indexOf("ano='"+a+"'");
+			linrt[indt] = linrt[indt].substr(0,ia)+linrt[indt].substr(ia).replace("m='s'","m='n'");
+			lrt = ordenar(linrt[indt],"<div ano");
+			lltot = ltot[indt].replace("(R*T)",lrt);
+			lltot = lltot.replace("(QT*)",qtdt[indt]).replace("(VL*)",valt[indt].toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2}));
+			document.getElementById("tot"+indt).innerHTML = lltot;
+			if (qtdt[indt] == 0) {
+				document.getElementById("tot"+indt).style.display = "none";
+			}
+		}
+		ultindr = indr+1;
+		indr = anor.indexOf(a,ultindr);
+	}
+	if (ordem == 1){
+		ix = 0;
+		iox = nomet.length;
+		ordx = [];
+		while (ix < iox) {
+			ordx.push(nomet[ix]);
+			ix = ix+1;
+		}
+		ordx.sort();
+		linx = [];
+		liny = [];
+		ix = 0;
+		while (ix < iox) {
+			ixx = nomet.indexOf(ordx[ix]);
+			lltot = ltot[ixx].replace("(R*T)",linrt[ixx]);
+			lltot = lltot.replace("(QT*)",qtdt[ixx]).replace("(VL*)",valt[ixx].toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2}));
+			linx.push(lltot);
+			ix = ix+1;
+		}
+		linx = linx.join("");
+		document.getElementById("restotbem").innerHTML = linx;
+	}
+	if (sod == 1) {
+		if (dlna.indexOf(a) == -1) {
+			dlna = dlna+","+a;
+		}
+	} else {
+		dlna = dlna.replace(","+a,"");
+	}
+	clbem = lbens.sort();
+	ixs = 0;
+	lisbens = "<dir><dir>";
+	lrbens = [];
+	upa = "";
+	bl = "";
+	totb = 0;
+	nli = "";
+	lz = "l2";
+	clt =  clbem.length;
+	ixss = 0;
+	ttab = 3;
+	while (ixs < clt) {
+		ipx = ixs % 2;
+		ioup = "a";
+		if (ipx == 0) {
+			ioup = "b";
+		}
+		axbb = clbem[ixs].indexOf("//");
+		bla = clbem[ixs].substr(axbb-4,4);
+		blb = clbem[ixs].substr(axbb+2);
+		if (dlna.indexOf(bla) > -1) {
+			lnbixs = "";
+			//if (clbem[ixs].substr(0,clbem[ixs].length-4) != bl) {
+			if (blb != bl) {
+				bl = blb;
+				lnbixs = "</table><br><br><table class='tbx'>"+lnb[blb+"000"];
+				ixss = ixss+1;
+			}
+			lnbixs = lnbixs+lnb[blb+bla].replace("tbdb1","tbdb1"+ioup);
+			lisbens = lisbens+lnbixs;
+		}
+		ixs = ixs+1;
+	}
+	lisbens = lisbens+"</table></dir></dir>";
+	lisbens = lisbens.replace("</table>","");
+	document.getElementById("reltipobem").innerHTML = lisbens;
+	mdmt = "<input type='checkbox' onClick='mdmbem(this,1)' id='seltb'>Marcar Todos";
+	mdmt = mdmt+" /<input type='checkbox' onClick='mdmbem(this,2)' id='selnb'>Desmarcar Todos";
+	listabc = "<b>-Lista de Bens</b> &nbsp; &nbsp; &nbsp; &nbsp; "+mdmt+"<br>"+listab;
+	if (document.getElementById("selhd").value == "") {
+		lisit = "";
+		document.getElementById("selcrit").innerHTML = "<b>---Critérios de Seleção---</b><br><table class='tbx'><tr><td>"+listabc+"<br>"+lisit+"<br><table><tr valign='top'><td>"+valoresx+"</td><td>&nbsp;&nbsp;&nbsp;</td><td>"+tombosx+"</td></tr></table><p align='right'><button onClick='lseltudo();'>Limpar Seleção</button>&nbsp;&nbsp;&nbsp;<button onClick='execsel();'>Executar</button></p>";
+	}
+}
+function lseltudo(){
+	document.getElementById("selnb").click();
+	document.getElementById("selnb").checked = false;
+	document.getElementById("rdd1").checked = true;
+	document.getElementById("iguaisa").value = "";
+	document.getElementById("menoresque").value = "";
+	document.getElementById("maioresque").value = "";
+	document.getElementById("entremaior").value = "";
+	document.getElementById("entremenor").value = "";
+	document.getElementById("ntombos").value = "";
+	bensselec = "**";
+	tomboselec = "()";
+	benssel = [];
+	csitselec = "**";
+	csitsel = [];
+	bxx = "**";
+	cxx = "**";
+	document.getElementById("selhd").value = "";
+	anoscl(1);
+	inicia();
+	anoscl(2);
+}
+function anoscl(a){
+	if (a == 1) {
+		anomaior = maiorano;
+		ctano = 1;
+		anocls = [];
+		anocl = document.getElementById("op"+ctano).getAttribute("ano");
+		csql = "";
+		while (parseInt(anocl) < maiorano) {
+			document.getElementById(anocl).innerHTML = "";
+			document.getElementById("res"+anocl).innerHTML = "";
+			if (document.getElementById("op"+ctano).innerHTML.indexOf("ltar") > 0) {
+				anocls.push(anocl);
+				document.getElementById("op"+ctano).click();
+			}
+			document.getElementById("op"+ctano).value = "N";
+			ctano = ctano+1;
+			anocl = document.getElementById("op"+ctano).getAttribute("ano");
+		}
+		if (document.getElementById("op"+ctano).innerHTML.indexOf("ltar") > 0) {
+			document.getElementById(anocl).innerHTML = "";
+			document.getElementById("res"+anocl).innerHTML = "";
+			anocls.push(anocl);
+			document.getElementById("op"+ctano).click();
+		}
+		document.getElementById("op"+ctano).value = "N";
+	} else {
+		ctano = 1;
+		anocl = document.getElementById("op"+ctano).getAttribute("ano");
+		while (parseInt(anocl) < anomaior) {
+			if (anocls.indexOf(anocl) > -1) {
+				document.getElementById("op"+ctano).click();
+			}
+			csql = csql+sbem("relatx","!!");
+			ctano = ctano+1;
+			anocl = document.getElementById("op"+ctano).getAttribute("ano");
+		}
+		//alert("SQL||"+csql)
+		if (anocls.indexOf(anocl) > -1) {
+			document.getElementById("op"+ctano).click();
+		}
+	}
+}
+function desmarcar(a){
+	if (a == 1) {
+		document.getElementById("seltb").checked = false;
+		document.getElementById("selnb").checked = false;
+	} else {
+		document.getElementById("sitt").checked = false;
+		document.getElementById("sitn").checked = false;
+	}
+}
+function execsel(){
+//alert("execsel()")
+	document.getElementById("selhd").value = "S";
+	txx = document.getElementById("ntombos").value;
+	txx = "("+txx+")".replace("\(,","(").replace(",\)",")");
+	bxx = "("+benssel+")";
+	cxx = "("+csitsel+")";
+	contexecsel();
+}
+function vevalr(nn) {
+	ret(document.getElementById("valh"));
+	vvx = isFinite(document.getElementById("valh").value);
+	return vvx;
+}
+function veval(a){
+	if (vevalr(a)){
+		document.getElementById("valh").value = a;
+		ret(document.getElementById("valh"));
+		valselec = valselec+parseInt(document.getElementById("valh").value)/100;;
+	} else {
+		touf = false;
+		a.focus();
+	}
+}
+function contexecsel(){
+//alert("contexecsel()")
+	ins = 0;
+	//if (benssel.length == qtlb) {
+	//	ins = qtlb;
+	//}
+	benssel = [];
+//alert(ins+"|"+qtlb)
+	while (ins < qtlb) {
+		a = document.getElementById("lbx"+ins);
+		if (a.checked) {
+			benssel.push(a.value);
+		//} else {
+		//	tira = benssel.indexOf(a.value);
+		//	if (tira > -1) {
+		//		benssel.splice(tira,1);
+		//	}
+		}
+		ins = ins+1;
+	}
+//alert(135)
+	ins = 0;
+	touf = true;
+	//if (csitsel.length == totsit) {
+	//	ins = totsit;
+	//}
+	csitsel = [];
+//alert(ins+"|"+totsit)
+	//while (ins < totsit) {
+	//	a = document.getElementById("lsx"+ins);
+	//	if (a.checked) {
+	//		csitsel.push(a.value);
+		//} else {
+		//	tira = csitsel.indexOf(a.value);
+		//	if (tira > -1) {
+		//		csitsel.splice(tira,1);
+		//	}
+	//	}
+		ins = ins+1;
+	//}
+	switch (radsel) {
+		case 2:
+			valselec = "@1(v1 "+document.getElementById("iguaisa").value+" v1)";
+			//valselec = "=";
+			//veval(document.getElementById("iguaisa").value);
+			break;
+		case 3:
+			valselec = "@2(v1 "+document.getElementById("menoresque").value+" v1)";
+			//valselec = "<=";
+			//veval(document.getElementById("menoresque").value);
+			break;
+		case 4:
+			valselec = "@3(v1 "+document.getElementById("maioresque").value+" v1)";
+			//valselec = ">=";
+			//veval(document.getElementById("maioresque").value);
+			break;
+		case 5:
+			valselec = "@4(v1 "+document.getElementById("entremenor").value+" v1)(v2 "+document.getElementById("entremaior").value+" v2)";
+			//valselec = " BETWEEN ";
+			//veval(document.getElementById("entremenor").value);
+			//valselec = valselec+" AND ";
+			//veval(document.getElementById("entremaior").value);
+			break;
+	}
+//alert(321)
+	if (touf) {
+		if (benssel.length == 0) {
+			bxx = "**";
+		} else {
+			bxx = "("+benssel+")"
+		}
+		if (csitsel.length == 0) {
+			sxx = "**";
+		} else {
+			sxx = "("+csitsel+")";
+		}
+		cxx = valselec;
+		sel = "s";
+		anoscl(1);
+		inicia();
+		tomboselec = txx;
+		bensselec = bxx;
+		csitselec = sxx;
+		valselec = cxx;
+		anoscl(2);
+	}
+}
+function msit(a,b){
+	if (a.checked)	{
+		document.getElementById("sitn").checked = false;
+		csitsel.push(b);
+	} else {
+		document.getElementById("sitt").checked = false;
+		tira = csitsel.indexOf(b);
+		csitsel.splice(tira,1);
+	}
+}
+function mdmbem(a,b){
+	if (a.checked) {
+		ixs = 0;
+		while (ixs < qtlb) {
+			if (b == 1) {
+				document.getElementById("lbx"+ixs).checked = true;
+			} else {
+				document.getElementById("lbx"+ixs).checked = false;
+			}
+			ixs = ixs+1;
+		}
+		if (b == 1) {
+			document.getElementById("selnb").checked = false;
+		} else {
+			document.getElementById("seltb").checked = false;
+		}
+	}
+}
+function mdmsit(a,b){
+	if (a.checked) {
+		clt = csits.length;
+		ixs = 0;
+		while (ixs < clt) {
+			if (b == 1) {
+				document.getElementById("lsx"+ixs).checked = true;
+			} else {
+				document.getElementById("lsx"+ixs).checked = false;
+			}
+			ixs = ixs+1;
+		}
+		if (b == 1) {
+			document.getElementById("sitn").checked = false;
+		} else {
+			document.getElementById("sitt").checked = false;
+		}
+	}
+}
+function vecrits(){
+	estx = document.getElementById("selcrit").style.display;
+	if (estx == "none") {
+		document.getElementById("selcrit").style.display = "inline";
+		document.getElementById("vcrit").innerHTML = "Ocultar Critérios para Seleção";
+		document.getElementById("vcrit").setAttribute("class","bt2x");
+	} else {
+		document.getElementById("selcrit").style.display = "none";
+		document.getElementById("vcrit").innerHTML = "Mostrar Critérios para Seleção";
+		document.getElementById("vcrit").setAttribute("class","bt1x");
+	}
+}
+function pini(){
+	document.getElementById("tbsmdmx").innerHTML = pags[0];
+	nump = 0;
+	document.getElementById("npag").innerHTML = "&nbsp;"+1+"&nbsp;";
+	vertp();
+}
+function pant(){
+	document.getElementById("npag").innerHTML = "&nbsp;"+nump+"&nbsp;";
+	nump = nump-1;
+	document.getElementById("tbsmdmx").innerHTML = pags[nump];
+	vertp();
+}
+function pprox(){
+	if (nump < ultpag-1) {
+		nump = nump+1;
+	}
+	document.getElementById("npag").innerHTML = "&nbsp;"+(nump+1)+"&nbsp;";
+	document.getElementById("tbsmdmx").innerHTML = pags[nump];
+	verfp();
+}
+function pfim(){
+	nump = ultpag-1;
+	document.getElementById("npag").innerHTML = "&nbsp;"+ultpag+"&nbsp;";
+	document.getElementById("tbsmdmx").innerHTML = pags[nump];
+	verfp();
+}
+function vertp(){
+	document.getElementById("ppro").style.visibility = "visible";
+	document.getElementById("pult").style.visibility = "visible";
+	if (nump == 0) {
+		document.getElementById("ppri").style.visibility = "hidden";
+		document.getElementById("pant").style.visibility = "hidden";
+	} else {
+		document.getElementById("ppri").style.visibility = "visible";
+		document.getElementById("pant").style.visibility = "visible";
+	}
+}
+function verfp(){
+	document.getElementById("ppri").style.visibility = "visible";
+	document.getElementById("pant").style.visibility = "visible";
+	if (nump == ultpag-1) {
+		document.getElementById("ppro").style.visibility = "hidden";
+		document.getElementById("pult").style.visibility = "hidden";
+	} else {
+		document.getElementById("ppro").style.visibility = "visible";
+		document.getElementById("pult").style.visibility = "visible";
+	}
+}
+function trimmm(a) {
+	it = a.trim()
+	it = it.replace(/  /g," ");
+	return it;
+}
+function desmsel(a,tba) {
+	document.getElementById("chk"+tba).click();
+	if (a == 1) {
+		if (document.getElementById("slx"+tba).checked) {
+			pagsmtb[nump].push(tba+"");
+		} else {
+			tira = pagsmtb[nump].indexOf(tba+"");
+			pagsmtb[nump].splice(tira,1);
+		}
+	} else {
+		if (document.getElementById("slx"+tba).checked) {
+			pagsdmtb[nump].push(tba+"");
+		} else {
+			tira = pagsdmtb[nump].indexOf(tba+"");
+			pagsdmtb[nump].splice(tira,1);
+		}
+	}
+}
+function fazlimpags(a) {
+	titn = trimmm(nomex[ixx].replace("(=)","").replace("(=)",""));
+	titd = trimmm(descx[ixx]);
+	nnx = titn.substr(0,40);
+	dx = titd.substr(0,90);
+	if (titn == nnx) {
+		detn = nnx;
+	} else {
+		detn = nnx+"... <a title='"+titn+"'>(+)</a>";
+	}
+	if (titd == dx) {
+		detd = dx;
+	} else {
+		detd = dx+"... <a title='"+titd+"'>(+)</a>";
+	}
+	if (a == 1) {
+		pagsmtb[nump].push(tbx);
+	} else {
+		pagsdmtb[nump].push(tbx);
+	}
+	ckx = "<input type='checkbox' id='slx"+tbx+"' onClick='desmsel("+a+",\""+tbx+"\");' checked>";
+	tbmdm = tbmdm+"<tr class='ll"+clin+"' valign='top'><td align='right'>"+tbx+"&nbsp;&nbsp;&nbsp;</td><td>"+ckx+"</td><td>&nbsp;&nbsp;"+detn+"</td><td>&nbsp;&nbsp;"+detd+"</tr>";
+	if (lpp == 20){
+		numpmais(a);
+	}
+}
+function numpmais(a){
+	pags[nump] = tbmdm;
+	nump = nump+1;
+	pagsmtb[nump] = [];
+	pagsdmtb[nump] = [];
+	tbmdm = "";
+	tbmcdmc(a);
+	lpp = 0;
+}
+function vesm(){
+	listado = 0;
+	linhap = "<div align='right'>Página - <span id='npag' style='background-color:#ff7755;color:#ffeecc;'>&nbsp;1&nbsp;</span> de <span id='npags' style='background-color:#ff7755;color:#ffeecc;'></span>&nbsp;</div>";
+	bots = "<button onClick='tl=0;tiratela();'>Ocultar</button>";
+	botsini = bots+"&nbsp;&nbsp;&nbsp;&nbsp;<button onClick='mcdmctombos(1);' title='Salvar as Marcações somente desta página!'>Salvar Página</button>&nbsp;&nbsp;&nbsp;&nbsp;<button onClick='mcdmctombos(2);' title='Salvar todas as marcações feitas, todas as páginas!'>Salvar Tudo</button>";
+	document.getElementsByTagName("body")[0].style.color="#77aa99";
+	document.getElementsByTagName("body")[0].style.textShadow="0 0 6px #aaff77,0 0 6px #aaff77,0 0 6px #aaff77";
+	slinha = "<table><tr><td align='center' colspan=4><span id='pagm' style='background-color:#ff7755;color:#ffeecc;'>&nbsp;&nbsp;<b>Páginas</b>&nbsp;&nbsp;</span></td></tr><tr style='font-weight:bold;'><td><a onClick='pini();' title='Primeira página' id='ppri'>&lt;&lt;</a>&nbsp;&nbsp;&nbsp;</td><td><a onClick='pant();' title='Página Anterior' id='pant'>&lt;</a>&nbsp;&nbsp;&nbsp;</td><td><a onClick='pprox();' title='Próxima Página' id='ppro'>&gt;</a>&nbsp;&nbsp;&nbsp;</td><td><a onClick='pfim();' title='Última Página' id='pult'>&gt;&gt;</a></td></tr></table>";
+	clmdm = "<span style='font-size:10px;'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ordem - <span style='bgcolor:ffddee'><input type=radio name='rdx' id='irdx1' onClick='vesmcont(1);'>Data de Aquisição</span> <span style='bgcolor:ffeecc'><input type=radio name='rdx' id='irdx2' onClick='vesmcont(2);'>Alfabética</span></span>";
+	inipag = linhap+"<table width='100%'><tr><td width='30%'><font style='xfont-family:Arial;color:#227744;'><u><b>Lista dos Bens Marcados e Desmarcados</b></u><br>"+clmdm+"</font></td><td align='center'>"+slinha+"</td><td align='right' width='30%'>"+botsini+"</td></tr></table>";
+	inipag = inipag+"<span id='tbsmdmx'></span>";
+	nhbpm = "<tr class='ll1'><td>-------</td><td colspan=2>Não há bens para mostrar nesta lista</td></tr>";
+	tmdm = inipag;
+	pags = [];
+	pagsmtb = [];
+	pagsdmtb = [];
+	l = -1;
+	ll = 0;
+	ix = 0;
+	lpp = 0;
+	nump = 0;
+	ctm = bdmx.length;
+	oddt = [];
+	oalf = [];
+	while (ix < ctm) {
+		axbem = tombox.indexOf(bdmx[ix]);
+		od = ""+anox[axbem]+mesx[axbem]+nomex[axbem];
+		oa = ""+nomex[axbem]+anox[axbem]+mesx[axbem];
+		oddt.push(od+"(t "+tombox[axbem]+" t)");
+		oalf.push(oa+"(t "+tombox[axbem]+" t)");
+		ix = ix+1;
+	}
+	oddt = oddt.sort();
+	oalf = oalf.sort();
+	document.getElementById("natela2").innerHTML = tmdm;
+	vesmcont(irdx)
+}
+function tbmcdmc(a) {
+	if (a == 1) {
+		tbmdm = tbmdm+"Bens Marcados:";
+	} else {
+		tbmdm = tbmdm+"<font color='ff7755'>Bens Desmarcados:</font>";
+	}
+	tbmdm = tbmdm+"<table class='tbx' style='color:225533;border-color:225533;font-size:10px;' width='100%'>";
+	tbmdm = tbmdm+"<tr><td width=60>&nbsp;Tombos</td><td width=15>Sel</td><td width=215>&nbsp;Bens</td><td width=840>&nbsp;Descrição</td></tr>";
+}
+function vesmcont(oo) {
+	nump = 0;
+	tbmdm = "";
+	tbmcdmc(1);
+	ix = 0;
+	ctm = bdmx.length;
+	pagsmtb[nump] = [];
+	pagsdmtb[nump] = [];
+	while (ix < ctm) {
+		lpp = lpp+1;
+		clin = (ix % 2)+1;
+		if (oo == 1) {
+			tbx = sbem(oddt[ix],"t");
+		} else {
+			tbx = sbem(oalf[ix],"t");
+		}
+		ixx = tombox.indexOf(tbx);
+		fazlimpags(1);
+		ix = ix+1;
+	}
+	if (ctm == 0) {
+		tbmdm = tbmdm+nhbpm;
+	}
+	numpmais(2);
+	l = -1;
+	ll = 0;
+	ix = 0;
+	lpp = 0;
+	ctm = bnmx.length;
+	while (ix < ctm) {
+		axbem = tombox.indexOf(bdmx[ix]);
+		od = ""+anox[axbem]+mesx[axbem]+nomex[axbem];
+		oa = ""+nomex[axbem]+anox[axbem]+mesx[axbem];
+		oddt.push(od+"(t "+tombox[axbem]+"t )");
+		oalf.push(oa+"(t "+tombox[axbem]+"t )");
+		ix = ix+1;
+	}
+	oddt = oddt.sort();
+	oalf = oalf.sort();
+	ix = 0;
+	while (ix < ctm) {
+		lpp = lpp+1;
+		clin = (ix % 2)+1;
+		if (oo == 1) {
+			tbx = sbem(oddt[ix],"t");
+		} else {
+			tbx = sbem(oalf[ix],"t");
+		}
+		ixx = tombox.indexOf(tbx);
+		fazlimpags(2);
+		ix = ix+1;
+	}
+	if (ctm == 0) {
+		tbmdm = tbmdm+nhbpm;
+	}
+	pags[nump]=tbmdm;
+	document.getElementById("telaob2").style.display = "inline";
+	ultpag = pags.length;
+	document.getElementById("telaob2").style.brightness = "100%";
+	document.getElementById("telaob2").style.opacity = "1";
+	document.getElementById("pagm").style.display = "inline";
+	xt = 2;
+	document.getElementById("ppri").style.visibility = "hidden";
+	document.getElementById("pant").style.visibility = "hidden";
+	document.getElementById("ppro").style.visibility = "visible";
+	document.getElementById("pult").style.visibility = "visible";
+	document.getElementById("npags").innerHTML = "&nbsp;"+ultpag+"&nbsp;";
+	if (irdx == 1) {
+		document.getElementById("irdx1").checked = true;
+		document.getElementById("irdx2").checked = false;
+	} else {
+		document.getElementById("irdx1").checked = false;
+		document.getElementById("irdx2").checked = true;
+	}
+	pini();
+}
+function mcdmcbemtudo(a){
+	btu = false;
+	vouf = false;
+	poui = a % 2;
+	if (poui == 1) {
+		vouf = true;
+	}
+	ix = 0;
+	ttano = anosc.length;
+	if (poui == 1) {
+		document.getElementById("dmtx").checked = false;
+		document.getElementById("dmty").checked = false;
+		if (a == 1) {
+			document.getElementById("mty").checked = document.getElementById("mtx").checked;
+		} else {
+			document.getElementById("mtx").checked = document.getElementById("mty").checked;
+		}
+	} else {
+		document.getElementById("mtx").checked = false;
+		document.getElementById("mty").checked = false;
+		if (a == 2) {
+			document.getElementById("dmty").checked = document.getElementById("dmtx").checked;
+		} else {
+			document.getElementById("dmtx").checked = document.getElementById("dmty").checked;
+		}
+	}
+	while (ix < ttano) {
+		ix2 = anox.indexOf(anosc[ix]);
+		while (ix2 > -1) {
+			if (document.getElementById("chk"+tombox[ix2]).checked != vouf) {
+				document.getElementById("chk"+tombox[ix2]).click();
+			}
+			document.getElementById("chk"+tombox[ix2]).checked = vouf;
+			ix2 = ix2+1;
+			ix2 = anox.indexOf(anosc[ix],ix2);
+		}
+		ix = ix+1;
+	}
+	btu = true;
+}
+function mcdmc(a,b,c,n,d) {
+	x = document.getElementById("vlnqt"+a).value;
+	y = document.getElementById("vlnvl"+a).value;
+	if (btu) {
+		document.getElementById("dmtx").checked = false;
+		document.getElementById("dmty").checked = false;
+		document.getElementById("mtx").checked = false;
+		document.getElementById("mty").checked = false;
+	}
+	if (d.checked) {
+		document.getElementById("chk"+b).checked = true;
+		document.getElementById("chkk"+b).checked = true;
+		document.getElementById("vlnqt"+a).value = parseInt(x)+1;
+		document.getElementById("vlnvl"+a).value = parseFloat(y)+parseFloat(c);
+		if (bdmx.indexOf(b+"") == -1) {
+			bdmx.push(b+"")
+		} else {
+			tira = bnmx.indexOf(b+"");
+			if (tira > -1) {
+				bnmx.splice(tira,1);
+			}
+		}
+		na = n+a;
+		lnb[na] = lnb[na].replace("id='chkk"+b+"'","id='chkk"+b+"' checked");
+		mxx = 1;
+	} else {
+		document.getElementById("chk"+b).checked = false;
+		document.getElementById("chkk"+b).checked = false;
+		document.getElementById("vlnqt"+a).value = parseInt(x)-1;
+		document.getElementById("vlnvl"+a).value = parseFloat(y)-parseFloat(c);
+		if (bnmx.indexOf(b+"") > -1) {
+			bnmx.push(b+"")
+		} else {
+			tira = bdmx.indexOf(b+"");
+			if (tira > -1) {
+				bdmx.splice(tira,1);
+			}
+		}
+		mxx = 0;
+	}
+	mnm = "none";
+	if (bdmx.length > 0) {
+		mnm = "inline";
+	}
+	if (bnmx.length > 0) {
+		mnm = "inline";
+	}
+	document.getElementById("mdms").style.display = mnm;
+	if (document.getElementById("vlnqt"+a).value == "0") {
+		document.getElementById("lnd"+a).style.display = "none";
+	} else {
+		document.getElementById("lnd"+a).style.display = "inline";
+	}
+	document.getElementById("lndq"+a).innerHTML = document.getElementById("vlnqt"+a).value;
+	vvvl = parseFloat(document.getElementById("vlnvl"+a).value);
+	vvvl = vvvl.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2});
+	document.getElementById("lndv"+a).innerHTML = vvvl;
+}
+function mcdmctbs() {
+	env = "tombos="+tmbs+"&mxx="+mxx+"&codt=m";
+	result = new XMLHttpRequest();
+	result.open("POST","patri-bdrel-conta8.php",false);
+	result.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	result.send(env);
+	regx = result.responseText;
+}
+function mcdmctombos(a) {
+	if (a == 1) {
+		tb1 = tmbs = pagsmtb[nump];
+		ix = 0;
+		ixx = pagsmtb[nump].length;
+		tirap = pagsmtb[nump];
+		while (ix < ixx) {
+			tira = bdmx.indexOf(tirap[ix])
+			bdmx.splice(tira,1)
+			ix = ix+1;
+		}
+		pagsmtb[nump] = [];
+	} else {
+		tmbs = bdmx;
+		bdmx = [];
+		pagsmtb = []
+	}
+	mxx = 1;
+	mcdmctbs();
+	if (a == 1) {
+		tb2 = tmbs = pagsdmtb[nump];
+		ix = 0;
+		ixx = pagsmtb[nump].length;
+		tirap = pagsdmtb[nump]
+		while (ix < ixx) {
+			tira = bnmx.indexOf(tirap[ix])
+			bnmx.splice(tira,1)
+			ix = ix+1;
+		}
+		pagsdmtb[nump] = [];
+	} else {
+		tmbs = bnmx;
+		pagsdmtb = [];
+		bdmx = []
+	}
+	if (a == 1) {
+		if (tb1.length > 0 || tb2.length > 0) {
+			ix = nump;
+			ixx = pags.length;
+			while (ix < ixx) {
+				pags[ix] = pags[ix+1];
+				ix = ix+1;
+			}
+			ultpag = ultpag-1;
+			document.getElementById("npags").innerHTML = "&nbsp;"+ultpag+"&nbsp;";
+			nump = nump-1;
+			ttz = 0;
+			if (bdmx.length == 0) {
+				if (bnmx.length == 0) {
+					tiratela();
+					ttz = 1;
+				}
+			}
+			if (ttz == 0) {
+				pprox();
+				vertp();
+				ttz = 0;
+			}
+		}
+	} else {
+		tl = 0;
+		tiratela();
+	}
+	mxx = 2;
+	mcdmctbs();
+}
+function montarelano(ano){
+	ind = anox.indexOf(ano);
+	seq = 0;
+	bemrx = [];
+	qtdrx = [];
+	valrx = [];
+	nomerx = [];
+	lx = "l1";
+	qttx = "<span id='lnqtt"+ano+"'>"+qtbb+"</span>";
+	ttx = "<span id='lntt"+ano+"'>"+vlbb+"</span>";
+	//vln = "<input type='hidden' id='vlnqt"+ano+"' value="+qtmc+"><input type='hidden' id='vlnvl"+ano+"' value="+vlmc+">";
+	//lnd = "<span id='lnd"+ano+"' style='display:none;'> - Quant.Marc.: <span id='lndq"+ano+"' vll="+qtmc+">"+qtmc+"</span> - Val.Marc.: R$<span id='lndv"+ano+"' value="+vlmc+">"+vlmc.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2})+"</span></span>";
+	lnd = "";
+	ln = "<br><dir><dir><b class='l2'>Ano - "+ano+"&nbsp;&nbsp;&nbsp;&nbsp;Bens: "+qttx+"&nbsp;&nbsp;&nbsp;&nbsp;Valor: R$"+ttx+lnd+"</b><table class='tbx'><tr valign='top'><td width=80>Data Aquisição</td><td width=500>Tipo do Bem</td><td width=55>Tombo</td><!--td>Marcação</td--><td width=130 align=right>Valor na Data de&nbsp;&nbsp;<br>Aquisição (R$)&nbsp;&nbsp;</td></tr>";
+	while (seq < tano) {
+		seq = seq+1;
+		mx = mesx[ind];
+		ax = anox[ind];
+		if (mesx[ind] < 10){
+			mx = "0"+mx;
+		}
+		tempo = mx+"/"+ax;
+		//if (parseInt(csitx[ind]) > 10) {
+		//	mcxx = " checked";
+		//} else {
+		//	mcxx = "";
+		//}
+		nx = nomex[ind].replace("(=)","").replace("(=)","");
+		if (lx == "l1") {
+			lx = "l2";
+		} else {
+			lx = "l1";
+		}
+		axx = cbemx[ind]+ano;
+		ln = ln+"<tr class='"+lx+"'><td>&nbsp;&nbsp;"+tempo+"</td><td>&nbsp;<a title='"+descx[ind]+"'>&nbsp;"+nx+"</a></td><td align='right'><a onClick='ficha("+tombox[ind]+");'>" +tombox[ind]+"</a>&nbsp;&nbsp;</td><!--td align='center'><input type='checkbox' id='chk"+tombox[ind]+"'"+mcxx+" onClick='mcdmc("+ano+","+tombox[ind]+","+valx[ind]+",\""+cbemx[ind]+"\",this);'></td--><td align='right'>"+valx[ind].toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2})+"&nbsp;&nbsp;</td></tr>";
+		lnqb[cbemx[ind]+ano] = lnqb[cbemx[ind]+ano]+1;
+		ioup = lnqb[cbemx[ind]+ano] % 2;
+		clb = "tbdb1";
+		if (ioup == 0) {
+			clb = "tbdb2";
+		}
+		lnb[cbemx[ind]+ano] = lnb[cbemx[ind]+ano]+"<tr class='x"+clb+"'  valign='top'><td>&nbsp;&nbsp;"+tempo+"&nbsp;&nbsp;</td><td align='right'><a onClick='ficha("+tombox[ind]+");'>" +tombox[ind]+"</a>&nbsp;&nbsp;</td><td xtitle='"+descx[ind]+"' style='margin:auto;width:90%'><div style='width:95%;margin:auto;'>"+descx[ind]+"</div></td><!--td align='center'><input type='checkbox' id='chkk"+tombox[ind]+"' "+mcxx+" onClick='mcdmc("+ano+","+tombox[ind]+","+valx[ind]+",\""+nomex[ind]+"\",this);'></td--><td align='right'>"+valx[ind].toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2})+"&nbsp;&nbsp;</td></tr>";
+		nx = "(=)"+nx+"(=)";
+		indx = nomerx.indexOf(nx);
+		if (indx == -1) {
+			nomerx.push(nomex[ind]);
+			qtdrx.push(1);
+			valrx.push(valx[ind]);
+		} else {
+			qtdrx[indx] = qtdrx[indx]+1;
+			valrx[indx] = valrx[indx]+valx[ind];
+		}
+		ind = ind+1;
+	}
+	//ln = ln+"</table></dir></dir>"+vln;
+	document.getElementById(ano).innerHTML = ln;
+	if (apx == 1) {
+		document.getElementById("lnd"+ano).style.display = "inline";
+	}
+	qttx = qtbb;
+	ttx = vlbb;
+	lr = "<br><dir><dir><b class='l2'>Ano - "+ano+"&nbsp;&nbsp;&nbsp;&nbspBens: "+qttx+"&nbsp;&nbsp;&nbsp;&nbsp;Valor: R$"+ttx+"</b><table class='tbx'><tr valign=top><td width=500>Tipo do Bem</td><td align='center' width=85>Quantidade<br>Total</td><td width=140 align='right'>Valor Total dos Bens<br>na Aquisição (R$)&nbsp;&nbsp;</td></tr>";
+	lx = "l1";
+	trx = nomerx.length;
+	indx = 0;
+	while (indx < trx) {
+		seq = indx+1;
+		nx = nomerx[indx].replace("(=)","").replace("(=)","");
+		lr = lr+"<tr class='"+lx+"'><td>&nbsp;"+nx+"</td><td align=right>"+qtdrx[indx]+"&nbsp;&nbsp;</td><td align='right'>"+valrx[indx].toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2})+"&nbsp;&nbsp;</td></tr>";
+		anor.push(ano);
+		nomer.push(nomerx[indx]);
+		qtdr.push(qtdrx[indx]);
+		valr.push(valrx[indx])
+		if (lx == "l1") {
+			lx = "l2";
+		} else {
+			lx = "l1";
+		}
+		indx = indx+1;
+	}
+	lr = lr+"</table></dir></dir></span>";
+	document.getElementById("res"+ano).innerHTML = lr;
+}
+/////////////////
+function montarpatri(el){
+	ini = 0;
+	af = el.indexOf("(##)");
+	tano = 0;
+	valano = 0;
+	qtmc = 0;
+	vlmc = 0;
+	apx = 0;
+	while (af > -1) {
+		bem = el.substr(ini,af-ini);
+		aano = parseInt(sbem(bem,"a"));
+		anox.push(aano);
+		mesx.push(parseInt(sbem(bem,"m")));
+		bemx = sbem(bem,"b");
+		cbem = sbem(bem,"c");
+		cgr = sbem(bem,"g");
+		cbem = cgr+"@"+cbem;
+		cbemx.push(cbem);
+		nnx = "(=)"+bemx+"(=)";
+		if (nomex.indexOf(nnx) < 0) {
+			lnb[cbem+"000"] = "<tr class='nrel valign='top'><td width=85>&nbsp;&nbsp;Data de<br>&nbsp;&nbsp;Aquisição&nbsp;&nbsp;</td><td width=70><br>&nbsp;&nbsp;Tombo&nbsp;&nbsp;</td><td width=500>&nbsp;&nbsp;[<span class='l1'>"+bemx+"</span>]<br>&nbsp;&nbsp;Descrição</td><!--td align='center' width=85><br>Marcação</td--><td align='center' width=85>Valor (R$)</td></tr>";
+			lbens.push(nnx+"000//"+cbem);
+			if (lcrit.indexOf(nnx) == -1) {
+				lcrit.push(nnx);
+			}
+		}
+		if (lbens.indexOf(nnx+aano+"//"+cbem) == -1) {
+			lnqb[nnx+aano] = 0;
+			lbens.push(nnx+aano+"//"+cbem);
+			//lcbens.push(bemx);
+			if (dlna.indexOf(""+aano) == -1) {
+				dlna = dlna+","+aano;
+			}
+			lnb[cbem+aano] = "";
+		}
+		nomex.push(nnx);
+		descx.push(sbem(bem,"d"));
+		tombox.push(sbem(bem,"t"));
+		vlxx = parseFloat(sbem(bem,"v"));
+		valx.push(vlxx);
+		mcxx = parseInt(sbem(bem,"x").trim());
+		csitx.push(sbem(bem,"x"));
+		//if (mcxx > 10) {
+		//	qtmc = qtmc+1;
+		//	vlmc = vlmc+vlxx;
+		//	apx = 1;
+		//}
+		tano = tano+1;
+		valano = valano + vlxx;
+		ini = af+4;
+		af = el.indexOf("(##)",ini);
+	}
+	//qtmc = sbem(el,"qm");
+	//vlmc = sbem(el,"vm");
+	//qtbb = sbem(el,"qt");
+	qtbb = tano;
+	//vlbb = parseFloat(sbem(el,"vb")).toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2});
+	vlbb = parseFloat(valano).toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2});
+}
+function xx_relat(a,b,c) { // Função correta;
+	if (c.value == "N") {
+		c.value = "X";
+		env = "siafi="+b+"&ano="+a+"&cond1="+bensselec+"&cond2="+csitselec+"&cond3="+valselec+"&cond4="+tomboselec+"&codt=a";
+		result = new XMLHttpRequest();
+		result.open("POST","patri-bdrel-conta8.php",false);
+		result.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		result.send(env);
+		relatx = result.responseText;
+		//if (tomboselec != "**") {
+		//	alert(relatx)
+		//	rxx = sbem(relatx,"!!");
+		//	alert("##"+rxx)
+		//}
+		//if (tomboselec != "**") {
+		//	alert(relatx)
+		//} else {
+		//	alert(tomboselec)
+		//}
+		//relatx = relatx.replaceAll("<","((");
+		//relatx = relatx.replaceAll(">","))");
+		//relatx = relatx.replaceAll("br))","br))<br>");
+		//relatx = relatx.replaceAll("/table))","/table))<br>");
+		//relatx = relatx.replaceAll("/tr))","/tr))<br>");
+		//relatx = relatx.replaceAll("/td))","/td))<br>");//
+		leuano = 1;
+		//nano = [];
+		montarpatri(relatx);
+		if (qtbb > 0) {
+			montarelano(a);
+		}
+		//if (document.getElementById("selhd").value == "") {
+		if (bdmx.length == 0) {
+			if (bnmx.length == 0) {
+				document.getElementById("mdms").style.display = "none";
+			}
+		}
+	}
+	if (parseInt(a) >= maiorano) {
+		if (c.innerHTML.indexOf("tar") > 0){
+			btano = parseInt(c.id.replace("op",""))-1;
+			maiorano = 0;
+			while (btano > 0) {
+				if (document.getElementById("op"+btano).innerHTML.indexOf("tar") > 0) {
+					maiorano = parseInt(document.getElementById("op"+btano).getAttribute("ano"));
+					btano = -1;
+				} else {
+					btano = btano -1;
+				}
+			}
+		} else {
+			maiorano = parseInt(a);
+		}
+	}
+	if (c.innerHTML == "Mostrar") {
+		restot(a,1);
+		numbotlig = numbotlig + 1;
+		c.innerHTML = "<b>Ocultar</b>";
+		c.setAttribute("class","bt2");
+		document.getElementById(a).style.display = "inline";
+		document.getElementById("res"+a).style.display = "inline";
+		anosc.push(a)
+	} else {
+		restot(a,2);
+		numbotlig = numbotlig - 1;
+		c.innerHTML = "Mostrar";
+		c.setAttribute("class","bt1");
+		document.getElementById(a).style.display = "none";
+		document.getElementById("res"+a).style.display = "none";
+		tira = anosc.indexOf(a);
+		anosc.splice(tira,1);
+	}
+	ligabot();
+	//if (document.getElementById("restotbem").style.display == "inline") {
+	//	document.getElementById("restotbem").style.display = "none";
+	//	resbens();
+	//}
+	return false;
+}
+function vbens(){
+	bbano = (regxx+"**").replace("(##)**","").split("(##)");
+	indx = 0;
+	tamx = bbano.length;
+	if (bensselec != "**") {
+		while (indx < tamx) {
+			cbsel = sbem(bbano[indx],"g")+"@"+sbem(bbano[indx],"c");
+			if (vbsel.indexOf(cbsel) > -1) abano = abano+bbano[indx]+"(##)";
+			indx = indx+1;
+		}
+	} else {
+		abano = regxx;
+	}
+	return abano;
+}
+function confval() {
+	abano = "";
+	bbano = (regxx+"**").replace("(##)**","").split("(##)");
+	indx = 0;
+	tamx = bbano.length;
+	if (valselec != "**") {
+		while (indx < tamx) {
+			veicx = bbano[indx]+"(##)";
+			vlreg = parseInt(sbem(veicx,"v").replace(",","").replace(".",""))/100;
+			switch (tval) {
+				case "@1":
+					if (vlreg != val1) veicx = "";
+					break;
+				case "@2":
+					if (vlreg > val1) {
+						veicx = "";
+					}
+					break;
+				case "@3":
+					if (vlreg < val1) veicx = "";
+					break;
+				case "@4":
+					if (vlreg < val1 || vlreg > val2) veicx = "";
+					break;
+			}
+			abano = abano+veicx;
+			indx = indx+1;
+
+		}
+	} else {
+		abano = regxx;
+	}
+	return abano;
+}
+function vtombos(){
+	bbano = (regxx+"**").replace("(##)**","").split("(##)");
+	indx = 0;
+	tamx = bbano.length;
+	if (tomboselec != "**") {
+		while (indx < tamx) {
+			ctombo = sbem(bbano[indx],"t");
+			if (tbsel.indexOf(ctombo) > -1) abano = abano+bbano[indx]+"(##)";
+			indx = indx+1;
+		}
+	} else {
+		abano = regxx;
+	}
+	return abano;
+}
+function filtrar() {
+	regxx = relanovd[opxx];
+	abano = "";
+	if (bensselec != "**") regxx = vbens();
+	abano = "";
+	if (regxx != "" && valselec != "**" ) regxx = confval();
+	abano = "";
+	if (regxx != "" && tomboselec != "()" ) regxx = vtombos();
+	return regxx;
+}
+function fvbsel() {
+	vbsel = bensselec.replace("(","").replace(")","").split(",");
+}
+function ftbsel() {
+	tbsel = tomboselec.replace("(","").replace(")","").split(",");
+}
+function ftval() {
+	tval = valselec.substr(0,2)
+	val1 = parseFloat(sbem(valselec,"v1").replace(",","").replace(".",""))/100;
+	val2 = parseFloat(sbem(valselec,"v2").replace(",","").replace(".",""))/100;
+}
+function relat(a,b,c) { // Função substituta
+	if (c.value == "N") {
+		c.value = "X";
+		opxx = parseInt(c.id.replace("op",""))-1;
+env = "siafi="+b+"&ano="+a+"&cond1="+bensselec+"&cond3="+valselec+"&cond4="+tomboselec+"&codt=a";
+//alert(env)
+		regxx = relanovd[opxx];
+		if (bensselec != "**") fvbsel();
+		if (valselec != "**") ftval();
+		if (tomboselec != "()") ftbsel();
+		relatx = filtrar();
+		//if (tomboselec != "**") {
+		//	alert(relatx)
+		//	rxx = sbem(relatx,"!!");
+		//	alert("##"+rxx)
+		//}
+		//if (tomboselec != "**") {
+		//	alert(relatx)
+		//} else {
+		//	alert(tomboselec)
+		//}
+		//relatx = relatx.replaceAll("<","((");
+		//relatx = relatx.replaceAll(">","))");
+		//relatx = relatx.replaceAll("br))","br))<br>");
+		//relatx = relatx.replaceAll("/table))","/table))<br>");
+		//relatx = relatx.replaceAll("/tr))","/tr))<br>");
+		//relatx = relatx.replaceAll("/td))","/td))<br>");//
+		leuano = 1;
+		//nano = [];
+		montarpatri(relatx);
+		if (qtbb > 0) {
+			montarelano(a);
+		}
+		//if (document.getElementById("selhd").value == "") {
+		if (bdmx.length == 0) {
+			if (bnmx.length == 0) {
+				document.getElementById("mdms").style.display = "none";
+			}
+		}
+	}
+
+	if (parseInt(a) >= maiorano) {
+		if (c.innerHTML.indexOf("tar") > 0){
+			btano = parseInt(c.id.replace("op",""))-1;
+			maiorano = 0;
+			while (btano > 0) {
+				if (document.getElementById("op"+btano).innerHTML.indexOf("tar") > 0) {
+					maiorano = parseInt(document.getElementById("op"+btano).getAttribute("ano"));
+					btano = -1;
+				} else {
+					btano = btano -1;
+				}
+			}
+		} else {
+			maiorano = parseInt(a);
+		}
+	}
+	if (c.innerHTML == "Mostrar") {
+		restot(a,1);
+		numbotlig = numbotlig + 1;
+		c.innerHTML = "<b>Ocultar</b>";
+		c.setAttribute("class","bt2");
+		document.getElementById(a).style.display = "inline";
+		document.getElementById("res"+a).style.display = "inline";
+		anosc.push(a)
+	} else {
+		restot(a,2);
+		numbotlig = numbotlig - 1;
+		c.innerHTML = "Mostrar";
+		c.setAttribute("class","bt1");
+		document.getElementById(a).style.display = "none";
+		document.getElementById("res"+a).style.display = "none";
+		tira = anosc.indexOf(a);
+		anosc.splice(tira,1);
+	}
+	ligabot();
+	//if (document.getElementById("restotbem").style.display == "inline") {
+	//	document.getElementById("restotbem").style.display = "none";
+	//	resbens();
+	//}
+	return false;
+}
+
+
+function ligabot (){
+	if (numbotlig > 0) {
+		qualrel(qrel);
+	} else {
+		document.getElementById("relacoes").style.display = "none";
+		//document.getElementById("R2").style.display = "none";
+		//document.getElementById("R3").style.display = "none";
+		//document.getElementById("R4").style.display = "none";
+		//document.getElementById("R5").style.display = "none";
+	}
+}
+function xx_ficha(a){ // Função correta
+	document.getElementsByTagName("body")[0].style.color="#77aa99";
+	//document.getElementsByTagName("body")[0].style.textShadow="0 0 6px #aaff77,0 0 6px #aaff77,0 0 6px #aaff77";
+	fichado = 0;
+	tf = 0;
+	env = "tombo="+a+"&codt=f";
+	result = new XMLHttpRequest();
+	result.open("POST","patri-bdrel-conta8.php",false);
+	result.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	result.send(env);
+	reltermo = result.responseText;
+	ddx = ("0"+sbem(reltermo,"d").trim()).substr(-2);
+	mmx = ("0"+sbem(reltermo,"m").trim()).substr(-2);
+	vlxx = parseFloat(sbem(reltermo,"v"));
+	fichabem = "<dir><u><b>Dados Relativos ao Bem ["+a+"]</b></u></dir>";
+	fichabem = fichabem+"Nome: <x>"+sbem(reltermo,"b")+"</x><p style='text-indent:-70px;margin-left:70px;margin-top:0;margin-bottom:0;'>Descrição: <x>"+sbem(reltermo,"D")+"</x></p>";
+	fichabem = fichabem+"Valor: <x>R$"+vlxx.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2})+"</x><br>Data de Aquisição: <x>"+ddx+"/"+mmx+"/"+sbem(reltermo,"a")+"</x><br>Número do Processo: <x>"+sbem(reltermo,"p");
+	fichabem = fichabem+"</x><br>Número do Empenho: <x>"+sbem(reltermo,"e")+"</x><br>Documento: <x>"+sbem(reltermo,"s")+"-"+sbem(reltermo,"n")+"</x>";
+	//fichabem = fichabem+"<br>Situação: <x>"+sbem(reltermo,"cs")+"-"+sbem(reltermo,"st")+"</x><br><br>";
+	fichabem = fichabem+"<hr width=70%><dir><u><b>Dados do Fornecedor</b></u></dir>CPF/CNPJ: <x>"+sbem(reltermo,"cf")+"</x>";
+	fichabem = fichabem+"<p style='text-indent:-70px;margin-left:70px;margin-top:0;margin-bottom:0;'>Nome: <x>"+sbem(reltermo,"fn")+"</x></p><p style='text-indent:-70px;margin-left:70px;margin-top:0;margin-bottom:0;'>Endereço: <x>"+sbem(reltermo,"fe")+"</x></p>";
+	fichabem = fichabem+"CEP: <x>"+sbem(reltermo,"fp")+"</x><br>Cidade: <x>"+sbem(reltermo,"fc")+"</x> Estado: <x>"+sbem(reltermo,"fes")+"</x><br><br>";
+	fichabem = fichabem+"<hr width=70%><dir><u><b>Localização/Unidade</b></u></dir><x>"+sbem(reltermo,"o")+"<br><br>"+sbem(reltermo,"se")+"</x>";
+	fichabem = fichabem+"<br><p align='right'><button onClick='tf=0;tiratela();'>Ocultar</button></p>";
+	document.getElementById("telaob1").style.display = "inline";
+	document.getElementById("natela1").innerHTML = fichabem;
+	document.getElementById("telaob1").style.brightness = "100%";
+	document.getElementById("telaob1").style.opacity = "1";
+	xt = 1;
+//	document.getElementById("telaob").style.border = "15px solid;";
+//	document.getElementById("telaob").style.borderColor = "#337744";
+//	document.getElementById("telaob").style.textShadow = "0 0 #000000";
+}
+function ficha(a){ // Função substituta
+	rdd = relanovd+"++";
+	rdd = rdd.replace("(##)++","")
+	rdd = rdd.split("(##)");
+	ind = 0;
+	tam = rdd.length;
+	while (ind < tam) {
+		if (rdd[ind].indexOf("(t "+a+" t)") > -1) {
+			reltermo = rdd[ind];
+			ind = tam;		
+		}
+		ind = ind+1;
+	}
+	document.getElementsByTagName("body")[0].style.color="#77aa99";
+	//document.getElementsByTagName("body")[0].style.textShadow="0 0 6px #aaff77,0 0 6px #aaff77,0 0 6px #aaff77";
+	fichado = 0;
+	tf = 0;
+	ddx = "08";
+	mmx = ("0"+sbem(reltermo,"m").trim()).substr(-2);
+	vlxx = parseFloat(sbem(reltermo,"v"));
+	fichabem = "<dir><u><b>Dados Relativos ao Bem ["+a+"]</b></u></dir>";
+	fichabem = fichabem+"Nome: <x>"+sbem(reltermo,"b")+"</x><p style='text-indent:-70px;margin-left:70px;margin-top:0;margin-bottom:0;'>Descrição: <x>"+sbem(reltermo,"d")+"</x></p>";
+	fichabem = fichabem+"Valor: <x>R$"+vlxx.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2})+"</x><br>Data de Aquisição: <x>"+ddx+"/"+mmx+"/"+sbem(reltermo,"a")+"</x><br>Número do Processo: <x>"+sbem(reltermo,"a")+"/"+mmx+ddx+vlxx;
+	fichabem = fichabem+"</x><br>Número do Empenho: <x>012"+a+"/"+sbem(reltermo,"a")+"</x><br>Documento: <x>35"+sbem(reltermo,"t")+"-"+sbem(reltermo,"a")+"</x>";
+	//fichabem = fichabem+"<br>Situação: <x>"+sbem(reltermo,"cs")+"-"+sbem(reltermo,"st")+"</x><br><br>";
+	cnpjdd = sbem(reltermo,"c")+"0123"+sbem(reltermo,"c")+"/0001";
+	nomedd = sbem(reltermo,"b")+" Peças e Acessórios S/A";
+	endd = "Rua Tiradentes, "+sbem(reltermo,"c")+" - Madalena";
+	cepdd = "50653-654";
+	cidd = "Recife";
+	estdd = "Pernambuco";
+	setdd = "Depósito de Material";
+	if (parseInt(sbem(reltermo,"c")) > 25) {
+		cnjjdd = sbem(reltermo,"c")+"0123"+sbem(reltermo,"c")+"/0001";
+		nomedd = sbem(reltermo,"b")+" Veiculos S/A";
+		endd = "Av Rui Barbosa, "+sbem(reltermo,"c")+" - São José";
+		cepdd = "50123-456";
+		setdd = "Setor de Transporte";
+	}
+	if (parseInt(sbem(reltermo,"c")) == 40) {
+		cnjjdd = sbem(reltermo,"c")+"0123"+sbem(reltermo,"c")+"/0001";
+		nomedd = "Motorcicletas HYSTHD S/A";
+		endd = "Av Dom Pedro II, "+sbem(reltermo,"c")+" - Piedade";
+		cepdd = "50584-222";
+	}
+	fichabem = fichabem+"<hr width=70%><dir><u><b>Dados do Fornecedor</b></u></dir>CPF/CNPJ: <x>"+cnpjdd+"</x>";
+	fichabem = fichabem+"<p style='text-indent:-70px;margin-left:70px;margin-top:0;margin-bottom:0;'>Nome: <x>"+nomedd+"</x></p><p style='text-indent:-70px;margin-left:70px;margin-top:0;margin-bottom:0;'>Endereço: <x>"+endd+"</x></p>";
+	fichabem = fichabem+"CEP: <x>"+cepdd+"</x><br>Cidade: <x>"+cidd+"</x> Estado: <x>"+estdd+"</x><br><br>";
+	fichabem = fichabem+"<hr width=70%><dir><u><b>Localização/Unidade</b></u></dir><x>"+setdd+"</x>";
+	fichabem = fichabem+"<br><p align='right'><button onClick='tf=0;tiratela();'>Ocultar</button></p>";
+	document.getElementById("telaob1").style.display = "inline";
+	document.getElementById("natela1").innerHTML = fichabem;
+	document.getElementById("telaob1").style.brightness = "100%";
+	document.getElementById("telaob1").style.opacity = "1";
+	xt = 1;
+//	document.getElementById("telaob").style.border = "15px solid;";
+//	document.getElementById("telaob").style.borderColor = "#337744";
+//	document.getElementById("telaob").style.textShadow = "0 0 #000000";
+}
+function tiratela(){
+	switch (xt) {
+		case 1:
+			tiraficha();
+			break;
+		case 2:
+			tiralista();
+			break;
+	}
+}
+function tiralista(){
+	if (tl == 0) {
+		if (listado == 1){
+			document.getElementById("telaob2").style.display = "none";
+			listado = 0;
+			document.getElementsByTagName("body")[0].style.color="#aaffcc";
+			document.getElementsByTagName("body")[0].style.textShadow="0 0 #000000";
+		} else {
+			listado = 1;
+		}
+	}
+}
+function tiraficha(){
+	if (tf == 0) {
+		if (fichado == 1) {
+			document.getElementById("telaob1").style.display = "none";
+			fichado = 0;
+			document.getElementsByTagName("body")[0].style.color="#aaffcc";
+			document.getElementsByTagName("body")[0].style.textShadow="0 0 #000000";
+		} else {
+			fichado = 1;
+		}
+	}
+}
+function relastsiafi() {
+	ind = 0
+	tam = relanovd.length;
+	anant = 0;
+	qtpa = 0;
+	qttot = 0;
+	vlpa = 0;
+	vltot = 0;
+	totr = "<totr id='rxt' ";
+	listanos = [];
+	lmanos = [];
+	lresanos = [];
+	bsii = "";
+	while (ind < tam) {
+		regano = relanovd[ind];
+		ireg = 0;
+		freg = regano.indexOf("(##)",ireg)
+		while (freg != -1) {
+			reg = regano.substr(ireg,freg)
+			i1 = reg.indexOf("(g");
+			f1 = reg.indexOf("(d")-i1;
+			breg = reg.substr(i1,f1).replace("(b","(n").replace("b)","n)");
+			if (bsii.indexOf(breg) == -1) bsii = bsii+breg+"(##)";
+			anoreg = sbem(reg,"a");
+			if (anant != anoreg) {
+				if (anant != 0) {
+					vvv = vlpa.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2});
+					linha = "<tr align='right' class='l2'><td>"+anant+"&nbsp;&nbsp;</td><td><span id='qanobsiafi"+anant+"'>"+qtpa+"</span>&nbsp;&nbsp;</td><td>"+vvv+"&nbsp;&nbsp;</td><td align='center'><button id='op"+ind+"' ano='"+anant+"' onClick='relat("+anant+",55/4800,this);' value='N' class='bt1'>Mostrar</button></td></tr>";
+					listanos.push(linha);
+					lmanos.push("<span id='"+anant+"' style='display:none;'></span>");
+					totr = totr+"tx"+anant+"="+vvv+" qt"+anant+"="+qtpa+" ";
+					lresanos.push("<span id='res"+anant+"' style='display:none;'></span>");
+				} else {
+					inia = anoreg;
+				}
+				anant = anoreg;
+				qttot = qttot+qtpa;
+				vltot = vltot+vlpa;
+				qtpa = 0;
+				vlpa = 0;
+			}
+			qtpa = qtpa+1;
+			vlpa = vlpa + parseFloat(sbem(reg,"v"));
+			ireg = freg+3;
+			freg = regano.indexOf("(##)",ireg)
+		}
+		ind = ind+1;
+	}
+	fima = anoreg;
+	vvv = vlpa.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2});
+	linha = "<tr align='right' class='l2'><td>"+anant+"&nbsp;&nbsp;</td><td><span id='qanobsiafi"+anant+"'>"+qtpa+"</span>&nbsp;&nbsp;</td><td>"+vvv+"&nbsp;&nbsp;</td><td align='center'><button id='op"+ind+"' ano='"+anant+"' onClick='relat("+anant+",55/4800,this);' value='N' class='bt1'>Mostrar</button></td></tr>";
+	listanos.push(linha);
+	lmanos.push("<span id='"+anant+"' style='display:none;'></span>");
+	totr = totr+"tx"+anant+"="+vvv+" qt"+anant+"="+qtpa+"></totr>";
+	lresanos.push("<span id='res"+anant+"' style='display:none;'></span>");
+	qttot = qttot+qtpa;
+	vltot = vltot+vlpa;
+	vvv = vltot.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2})
+	numanos = listanos.length;
+	rlsi = "<span class='l2 idt'><b>55/4800 - VEICULOS DIVERSOS</b></span> - <button onClick='mostracontas();'>Início - Contas Siafi</button><br><br><br><br><table><tr valign='top'><td><table class='tbx'><tr valign=top><td>Anos</td><td align='center'>Qtd de Bens<br>Adquiridos</td><td align='center'>Valor Total dos<br>Bens (R$)</td><td align='center'>Apresentação<br>dos Bens</td></tr><tr class='l1' align='right'><td>"+ inia +"/<br>"+ fima +"&nbsp;<br></td><td><b><span id='totbsiafi'>"+qttot+"</span>&nbsp;&nbsp;</b></td><td><b>"+vvv+"&nbsp; </b></td><td align='center'><button id='optot' value='N' onClick='trel("+numanos+",this);' class='bt1'>Mostrar<br>Todos</button></td></tr>";
+	ind = 0;
+	tam = listanos.length;
+	while (ind < tam) {
+		rlsi = rlsi+listanos[ind];
+		ind = ind+1;
+	}
+	rlsi = rlsi+"</table>";
+	rlsi = rlsi+totr;
+
+	rlsi = rlsi+"</td><td><span class='reldettot'><dir><dir><span id='relacoes' style='display:none;'><b><u>Relações de Bens da Patribens por Classificação - Escolha</u></b><br><table style='position:relative;left:10px;top:7px;'><tr class='l2' id='rlt1'><td id='sd1'></td><td onClick='qualrel(1)'>&nbsp;&nbsp;Totais por Tipo do Bem dos Anos Indicados&nbsp;&nbsp;</td></tr><tr class='l2' id='rlt2'><td id='sd2'></td><td onClick='qualrel(2)'>&nbsp;&nbsp;Resumo de Bens Adquiridos&nbsp;&nbsp;</td></tr><tr class='l1' id='rlt3'><td id='sd3'></td><td onClick='qualrel(3)'>&nbsp;&nbsp;Por Data de Aquisição&nbsp;&nbsp;</td></tr><tr class='l2' id='rlt4'><td id='sd4'></td><td onClick='qualrel(4)'>&nbsp;&nbsp;Por Tipo de Bem&nbsp;&nbsp;</td></tr><tr class='l2' id='rlt5'><td id='sd5'></td><td onClick='qualrel(5)'>&nbsp;&nbsp;Fazer Seleção por Bem/Valor&nbsp;&nbsp;</td></tr></table><br><hr class='dt'><table width='100%'><tr><td align='right'>&nbsp;<span id='mdms'><button class='btx' onClick='tl=0;vesm();'>Ver e Salvar as Marcações</button></span></span></td></tr></table><dir><dir></span><table width='100%'><tr valign='bottom'><td><span id='relesc'></span></td><td align='right' style='position:relative;top:20px;'><span id='mdmtx' style='display:none;'><b><input type='checkbox' onClick='mcdmcbemtudo(1);' id='mtx'> Marcar Todos/<input type='checkbox' onClick='mcdmcbemtudo(2);' id='dmtx'> Desmarcar Todos</b></span> <span id='mdmty' style='display:none;'><b><input type='checkbox' onClick='mcdmcbemtudo(3);' id='mty'> Marcar Todos/<input type='checkbox' onClick='mcdmcbemtudo(4);' id='dmty'> Desmarcar Todos</b></span></font></td></tr></table></dir></dir><span id='restotbem' style='display:none;'></span><br><span id='selcrit' style='display:none;'></span><span id='reltipobem' style='display:none;'></span><span id='resimp' style='display:none;'></span><span id='relbens' style='display:none;'>";
+	ind = 0;
+	while (ind < tam) {
+		rlsi = rlsi+lmanos[ind];
+		ind = ind+1;
+	}
+	ind = 0;
+	rlsi = rlsi+"</span>";
+	rlsi = rlsi+"<span id='relanos' style='display:none;'>";
+	while (ind < tam) {
+		rlsi = rlsi+lresanos[ind];
+		ind = ind+1;
+	}
+	rlsi = rlsi+"</span>";
+	rlsi = rlsi+"<br></span>||*||"+bsii;
+}
+
+function xx_calc(cs,ds){ // função correta
+	document.getElementById("tabsiafi").style.display = "none";
+	env = "siafi="+cs+"&dsiafi="+ds+"&codt=t";
+	ctsiafi = rctsiafi = cs;
+	dxsiafi = rdxsiafi = ds;
+	result = new XMLHttpRequest();
+	result.open("POST","patri-bdrel-conta8.php",false);
+	result.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	result.send(env);
+	btcontas = "<button onClick='mostracontas();'>Início - Contas Siafi</button><br><br>";
+	idsiafi = "<span class='l2 idt'><b>"+cs+" - "+ds+"</b></span> - "+btcontas+"<br><br>";
+	relsiafi = idsiafi+result.responseText;
+	//relsiafi = relsiafi.replaceAll("<","((");
+	//relsiafi = relsiafi.replaceAll(">","))");
+	//relsiafi = relsiafi.replaceAll("br))","br))<br>");
+	//relsiafi = relsiafi.replaceAll("/table))","/table))<br>");
+	//relsiafi = relsiafi.replaceAll("/tr))","/tr))<br>");
+	//relsiafi = relsiafi.replaceAll("/td))","/td))<br>");//
+	return false;
+}
+////
+function relatsiafi() {
+	ind = 0
+	tam = relanovd.length;
+	anant = 0;
+	qtpa = 0;
+	qttot = 0;
+	vlpa = 0;
+	vltot = 0;
+	totr = "<totr id='rxt' ";
+	listanos = [];
+	lmanos = [];
+	lresanos = [];
+	bsii = "";
+	nlnl = 0;
+	while (ind < tam) {
+		nlnl = nlnl+1;
+		regano = relanovd[ind];
+		ireg = 0;
+		freg = regano.indexOf("(##)",ireg)
+		while (freg != -1) {
+			reg = regano.substr(ireg,freg)
+			i1 = reg.indexOf("(g");
+			f1 = reg.indexOf("(d")-i1;
+			breg = reg.substr(i1,f1).replace("(b","(n").replace("b)","n)");
+			if (bsii.indexOf(breg) == -1) bsii = bsii+breg+"(##)";
+			anoreg = sbem(reg,"a");
+			if (anant != anoreg) {
+				if (anant != 0) {
+					vvv = vlpa.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2});
+					linha = "<tr align='right' class='l"+nlnl+"'><td>"+anant+"&nbsp;&nbsp;</td><td><span id='qanobsiafi"+anant+"'>"+qtpa+"</span>&nbsp;&nbsp;</td><td>"+vvv+"&nbsp;&nbsp;</td><td align='center'><button id='op"+ind+"' ano='"+anant+"' onClick='relat("+anant+",55/4800,this);' value='N' class='bt1'>Mostrar</button></td></tr>";
+					listanos.push(linha);
+					if (nlnl == 2) nlnl = 0;
+					lmanos.push("<span id='"+anant+"' style='display:none;'></span>");
+					totr = totr+"tx"+anant+"="+vvv+" qt"+anant+"="+qtpa+" ";
+					lresanos.push("<span id='res"+anant+"' style='display:none;'></span>");
+				} else {
+					inia = anoreg;
+				}
+				anant = anoreg;
+				qttot = qttot+qtpa;
+				vltot = vltot+vlpa;
+				qtpa = 0;
+				vlpa = 0;
+			}
+			qtpa = qtpa+1;
+			vlpa = vlpa + parseFloat(sbem(reg,"v"));
+			ireg = freg+3;
+			freg = regano.indexOf("(##)",ireg)
+		}
+		ind = ind+1;
+	}
+	if (nlnl == 2) nlnl = 0;
+	nlnl =nlnl+1;
+	fima = anoreg;
+	vvv = vlpa.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2});
+	linha = "<tr align='right' class='l"+nlnl+"'><td>"+anant+"&nbsp;&nbsp;</td><td><span id='qanobsiafi"+anant+"'>"+qtpa+"</span>&nbsp;&nbsp;</td><td>"+vvv+"&nbsp;&nbsp;</td><td align='center'><button id='op"+ind+"' ano='"+anant+"' onClick='relat("+anant+",55/4800,this);' value='N' class='bt1'>Mostrar</button></td></tr>";
+	listanos.push(linha);
+	lmanos.push("<span id='"+anant+"' style='display:none;'></span>");
+	totr = totr+"tx"+anant+"="+vvv+" qt"+anant+"="+qtpa+"></totr>";
+	lresanos.push("<span id='res"+anant+"' style='display:none;'></span>");
+	qttot = qttot+qtpa;
+	vltot = vltot+vlpa;
+	vvv = vltot.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2})
+	numanos = listanos.length;
+	rlsi = "<span class='l2 idt'><b>55/4800 - VEICULOS DIVERSOS</b></span> - <button onClick='mostracontas();'>Início - Contas Siafi</button><br><br><br><br><table><tr valign='top'><td><table class='tbx'><tr valign=top><td>Anos</td><td align='center'>Qtd de Bens<br>Adquiridos</td><td align='center'>Valor Total dos<br>Bens (R$)</td><td align='center'>Apresentação<br>dos Bens</td></tr><tr class='l1' align='right'><td>"+ inia +"/<br>"+ fima +"&nbsp;<br></td><td><b><span id='totbsiafi'>"+qttot+"</span>&nbsp;&nbsp;</b></td><td><b>"+vvv+"&nbsp; </b></td><td align='center'><button id='optot' value='N' onClick='trel("+numanos+",this);' class='bt1'>Mostrar<br>Todos</button></td></tr>";
+	ind = 0;
+	tam = listanos.length;
+	while (ind < tam) {
+		rlsi = rlsi+listanos[ind];
+		ind = ind+1;
+	}
+	rlsi = rlsi+"</table>";
+	rlsi = rlsi+totr;
+
+	rlsi = rlsi+"</td><td><span class='reldettot'><dir><dir><span id='relacoes' style='display:none;'><b><u>Relações de Bens da Patribens por Classificação - Escolha</u></b><br><table style='position:relative;left:10px;top:7px;'><tr class='l2' id='rlt1'><td id='sd1'></td><td onClick='qualrel(1)'>&nbsp;&nbsp;Totais por Tipo do Bem dos Anos Indicados&nbsp;&nbsp;</td></tr><tr class='l2' id='rlt2'><td id='sd2'></td><td onClick='qualrel(2)'>&nbsp;&nbsp;Resumo de Bens Adquiridos&nbsp;&nbsp;</td></tr><tr class='l1' id='rlt3'><td id='sd3'></td><td onClick='qualrel(3)'>&nbsp;&nbsp;Por Data de Aquisição&nbsp;&nbsp;</td></tr><tr class='l2' id='rlt4'><td id='sd4'></td><td onClick='qualrel(4)'>&nbsp;&nbsp;Por Tipo de Bem&nbsp;&nbsp;</td></tr><tr class='l2' id='rlt5'><td id='sd5'></td><td onClick='qualrel(5)'>&nbsp;&nbsp;Fazer Seleção por Bem/Valor&nbsp;&nbsp;</td></tr></table><br><hr class='dt'><table width='100%'><tr><td align='right'>&nbsp;<span id='mdms'><button class='btx' onClick='tl=0;vesm();'>Ver e Salvar as Marcações</button></span></span></td></tr></table><dir><dir></span><table width='100%'><tr valign='bottom'><td><span id='relesc'></span></td><td align='right' style='position:relative;top:20px;'><span id='mdmtx' style='display:none;'></span> <span id='mdmty' style='display:none;'></span></font></td></tr></table></dir></dir><span id='restotbem' style='display:none;'></span><br><span id='selcrit' style='display:none;'></span><span id='reltipobem' style='display:none;'></span><span id='resimp' style='display:none;'></span><span id='relbens' style='display:none;'>";
+	ind = 0;
+	while (ind < tam) {
+		rlsi = rlsi+lmanos[ind];
+		ind = ind+1;
+	}
+	ind = 0;
+	rlsi = rlsi+"</span>";
+	rlsi = rlsi+"<span id='relanos' style='display:none;'>";
+	while (ind < tam) {
+		rlsi = rlsi+lresanos[ind];
+		ind = ind+1;
+	}
+	rlsi = rlsi+"</span>";
+	rlsi = rlsi+"<br></span>||*||"+bsii;
+	return rlsi;
+}
+
+
+////
+function calc(cs,ds){ // Função substituta
+	relsiafi = relatsiafi();
+	return false;
+}
+function pontos(x) {
+	tamnum = x.length;
+	tponto = 6;
+	while (tamnum > tponto) {
+		pp = tamnum-tponto;
+		x =  x.substr(0,pp)+"."+x.substr(pp);
+		tamnum = tamnum+1;
+		tponto = tponto+4;
+	}
+	return x;
+}
+function num(a){
+	ret(a);
+	tam = a.value.length;
+	if (tam == 0) a.value = "0,00";
+	else if (tam == 1) a.value = "0,0"+a.value;
+	else if (tam == 2) a.value = "0,"+a.value;
+	else {
+		a.value = a.value.substr(0,tam-2)+","+ a.value.substr(tam-2);
+		a.value = pontos(a.value);
+	}
+	document.getElementById("valh").value = a.value;
+}
+function ret(a){
+	a.value = a.value.replace(",","");
+	//while (a.value.indexOf(".") > -1) {
+	//	a.value = a.value.replace(".","");
+	//}
+		a.value = a.value.replace(/\./g,"");
+	while (a.value.substr(0,1) == "0") {
+		a.value = a.value.substr(1);
+	}
+}
+function fix(nn){
+	nn.value = document.getElementById("valh").value;
+}
+function telasit(el){
+	af = el.indexOf("(##)");
+	ini = 0;
+	while (af > -1) {
+		bem = el.substr(ini,af-ini);
+		csits.push(parseInt(sbem(bem,"c")));
+		sits.push(sbem(bem,"d"));
+		ini = af+1;
+		af = el.indexOf("(##)",ini);
+	}
+	lisit = "";
+	clsit = csits.length;
+	ixss = 0;
+	nli = "";
+	ttab = 5;
+	lz = "";
+	while (ixss < clsit) {
+		nlf = "</tr>xxx";
+		iin = ixss % ttab;
+		if (iin == 0) {
+			if (lz == "l1") {
+				lz = "l2";
+			} else {
+				lz = "l1";
+			}
+			nli = "<tr class='"+lz+"'>";
+		} else {
+			nli = "";
+		}
+		ttabx = ttab-1;
+		if (iin == ttabx) {
+			nlf = "</tr>";
+		}
+		lisit = lisit.replace("</tr>xxx","");
+		itxs = "<input type='checkbox' id='lsx"+ixss+"' value='"+csits[ixss]+"' onClick='desmarcar(2);' checked> "+sits[ixss];
+		lisit = lisit+nli+"<td width=160>"+itxs+"</td>"+nlf;
+		csitsel.push(csits[ixss]);
+		ixss = ixss+1;
+	}
+	totsit = ixss;
+	lisit = lisit.replace("</tr>xxx","<tr>");
+	mdmt = "<input type='checkbox' onClick='mdmsit(this,1)' id='sitt'>Marcar Todas";
+	mdmt = mdmt+" /<input type='checkbox' onClick='mdmsit(this,2)' id='sitn'>Desmarcar Todas";
+	lisit = "<span class='l2'><b>-Situações Possíveis</b></span><br>"+mdmt+"<br><table class='tbx' width='100%'>"+lisit+"</table>";
+	valoresx = "<span class='l2'><b>-Valores</b> </span><br><br><table class='tbx'>";
+	valoresx = valoresx+"<tr class='l1'><td colspan=2><input type='radio' name='radiox' id='rdd1' checked onClick='selrad(\"**\",\"@\",1)'>Independente de valor do bem&nbsp;</td></tr>";
+	valoresx = valoresx+"<tr class='l2'><td><input type='radio' name='radiox' id='rdd2' onClick='selrad(\"iguaisa\",\"@\",2);'>Iguais a&nbsp;&nbsp;</td><td>&nbsp;R$<input type='text' size=9 id='iguaisa' onFocus='srad(\"rdd2\");' onKeyUp='num(this);' onKeyDown='ret(this);'  onBlur='fix(this);' class='nument'></td></tr>";
+	valoresx = valoresx+"<tr class='l1'><td><input type='radio' name='radiox' id='rdd3' onClick='selrad(\"menoresque\",\"@\",3);'>Até&nbsp;&nbsp;</td><td>&nbsp;R$<input type='text' size=9 id='menoresque' onFocus='srad(\"rdd3\");' onKeyUp='num(this);' onKeyDown='ret(this);'  onBlur='fix(this);' class='nument'></td></tr>";
+	valoresx = valoresx+"<tr class='l2'><td><input type='radio' name='radiox' id='rdd4' onClick='selrad(\"maioresque\",\"@\",4);'>A partir de&nbsp;&nbsp;</td><td>&nbsp;R$<input type='text' size=9 id='maioresque' onFocus='srad(\"rdd4\");' onKeyUp='num(this);' onKeyDown='ret(this);'  onBlur='fix(this);' class='nument'></td></tr>";
+	valoresx = valoresx+"<tr class='l1'><td><input type='radio' name='radiox' id='rdd5' onClick='selrad(\"entremenor\",\"entremaior\",5);'>Entre </td><td>&nbsp;R$<input type='text' size=9 id='entremenor' onKeyUp='num(this);' onFocus='srad(\"rdd5\");' onKeyDown='ret(this);' onBlur='fix(this);' class='nument'> e R$<input type='text' size=9 id='entremaior' onFocus='srad(\"rdd5\");' onKeyUp='num(this);' onKeyDown='ret(this);' onBlur='fix(this);' class='nument'></td></tr>";
+	valoresx = valoresx+"</table><input type='hidden' id='valh'>";
+	tombosx = "<span class='l2'>-Escreva os números dos <b>Tombos</b> a serem<br>considerados, separados por vírgulas.</span>";
+	tombosx = tombosx+"<br><br><textarea id='ntombos' rows=5 cols=50 style='color:ddffee;background-color:338844;' onBlur='limpa(this);'></textarea>";
+}
+function limpa(a) {
+	a.value = a.value.replace(/[a-z]/gi,"");
+	a.value = a.value.replace(/@/g,"");
+	a.value = a.value.replace(/(\d{1},)/g,"$1@");
+	sai = ["/","\\\\","!","\\\*","\\\-","\\\(","\\\)","\\\{","\\\}","\\\[","\\\]","#","\\\$","%","¨","&","\\\<","\\\>","\\\:","|","_","\\\+","Á","À","Ã","Â","Ä","É","È","Ê","Ë","Í","Ì","Î","Ï","Ó","Ò","Õ","Ô","Ö","Ú","Ù","Û","Ü","Ç","Ý","\\\.","\\\,"];
+	ii = 0;
+	while (ii < sai.length) {
+		xxx = sai[ii];
+		rx = new RegExp(xxx,"gi");
+		a.value = a.value.replace(rx,"");
+		ii = ii+1;
+	}
+	a.value = a.value.replace(/\;/g,",");
+	a.value = a.value.replace(/@/g,",");
+	//a.value = a.value+",,";
+	//a.value = a.value.replace(",,,","");
+	//alert(a.value)
+}
+function srad(a1) {
+	document.getElementById(a1).click();
+}
+function selrad(a1,a2,b){
+	document.getElementById("iguaisa").setAttribute("class","nument");
+	document.getElementById("menoresque").setAttribute("class","nument");
+	document.getElementById("maioresque").setAttribute("class","nument");
+	document.getElementById("entremenor").setAttribute("class","nument");
+	document.getElementById("entremaior").setAttribute("class","nument");
+	if (a1 != "**") {
+		document.getElementById(a1).setAttribute("class","numentfx");
+		document.getElementById(a1).focus();
+	}
+	if (a2 != "@") {
+		document.getElementById(a2).setAttribute("class","numentfx");
+	}
+	radsel = b;
+}
+function xx_vesit(){ /////// função correta
+	env = "codt=s";
+	result = new XMLHttpRequest();
+	result.open("POST","patri-bdrel-conta8.php",false);
+	result.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	result.send(env);
+	relsit = result.responseText;
+	return false;
+}
+function vesit(){ /////função substituta
+	//relsit = "(c 1 c)(d BOM d)(##)(c 2 c)(d OCIOSO d)(##)(c 3 c)(d RECUPER&Aacute;VEL d)(##)(c 4 c)(d ANTI - ECON&Ocirc;MICO d)(##)(c 5 c)(d IRRECUPER&Aacute;VEL d)(##)(c 11 c)(d BOM* d)(##)(c 12 c)(d OCIOSO* d)(##)(c 13 c)(d RECUPER&Aacute;VEL* d)(##)(c 14 c)(d ANTI-ECON&Ocirc;MICO* d)(##)(c 15 c)(d IRRECUPER&Aacute;VEL* d)(##)";
+	relsit = "(c 1 c)(d BOM d)(##)(c 2 c)(d OCIOSO d)(##)(c 3 c)(d RECUPER&Aacute;VEL d)(##)(c 4 c)(d ANTI - ECON&Ocirc;MICO d)(##)(c 5 c)(d IRRECUPER&Aacute;VEL d)(##)";//(c 11 c)(d BOM* d)(##)(c 12 c)(d OCIOSO* d)(##)(c 13 c)(d RECUPER&Aacute;VEL* d)(##)(c 14 c)(d ANTI-ECON&Ocirc;MICO* d)(##)(c 15 c)(d IRRECUPER&Aacute;VEL* d)(##)";
+	return false;
+}
+function iniciatot() {
+	document.getElementById("selhd").value = "";
+	inicia();
+	alert("Carga de Dados Completa")
+}
+function inicia() {
+	//*****
+	vdutil = [];
+	resid = [];
+	deprano = [];
+	relanovd = [];
+	relanovd[0]= "(m 12 m)(a 1981 a)(g 2 g)(c 0022 c)(b BICICLETA b)(d BICICLETA MODELO MONARK BARRA DUPLA  d)(t 25465 t)(v 780.00 v)(x 1 x)(##)(m 11 m)(a 1981 a)(g 2 g)(c 0026 c)(b VW b)(d MODELO KOMBI 8 LUGARES d)(t 26442 t)(v 46280.00 v)(x 1 x)(##)(m 11 m)(a 1981 a)(g 2 g)(c 0026 c)(b VW b)(d MODELO KOMBI 8 LUGARES d)(t 26443 t)(v 46280.00 v)(x 1 x)(##)(m 11 m)(a 1981 a)(g 2 g)(c 0026 c)(b VW b)(d MODELO KOMBI 8 LUGARES d)(t 26444 t)(v 46280.00 v)(x 1 x)(##)";
+
+	relanovd[1]= "(m 10 m)(a 1986 a)(g 2 g)(c 0022 c)(b BICICLETA b)(d BICICLETA MODELO MONARK BARRA DUPLA  d)(t 27594 t)(v 780.00 v)(x 1 x)(##)(m 11 m)(a 1986 a)(g 2 g)(c 0029 c)(b GM b)(d MODELO CHEVY 500 COM A/C d)(t 28822 t)(v 37580.00 v)(x 1 x)(##)(m 11 m)(a 1986 a)(g 2 g)(c 0029 c)(b GM b)(d MODELO CHEVY 500 COM A/C d)(t 28823 t)(v 37580.00 v)(x 1 x)(##)";
+	relanovd[2]= "(m 2 m)(a 1992 a)(g 2 g)(c 0022 c)(b BICICLETA b)(d BICICLETA MODELO MONARK BARRA DUPLA  d)(t 32215 t)(v 780.00 v)(x 1 x)(##)(m 2 m)(a 1992 a)(g 2 g)(c 0013 c)(b CARRO DE MAO b)(d CARRO DE MAO DE METAL COM PNEU DE CAMARA d)(t 32216 t)(v 122.50 v)(x 1 x)(##)(m 2 m)(a 1992 a)(g 2 g)(c 0013 c)(b CARRO DE MAO b)(d CARRO DE MAO DE METAL COM PNEU DE CAMARA d)(t 32217 t)(v 122.50 v)(x 1 x)(##)(m 2 m)(a 1992 a)(g 2 g)(c 0013 c)(b CARRO DE MAO b)(d CARRO DE MAO DE METAL COM PNEU DE CAMARA d)(t 32218 t)(v 122.50 v)(x 1 x)(##)";
+	relanovd[3]= "(m 8 m)(a 1994 a)(g 2 g)(c 0022 c)(b BICICLETA b)(d BICICLETA MODELO MONARK BARRA DUPLA  d)(t 33013 t)(v 950.00 v)(x 1 x)(##)(m 9 m)(a 1994 a)(g 2 g)(c 0022 c)(b BICICLETA b)(d BICICLETA MODELO MONARK BARRA DUPLA  d)(t 33014 t)(v 950.00 v)(x 1 x)(##)";
+	relanovd[4]= "(m 11 m)(a 1995 a)(g 2 g)(c 0024 c)(b CARROCA REBOCAVEL b)(d CARROCA REBOCAVEL P/TRANSP.DE LIXO CACAMBA FORRADA CHAPA MET.N.14 CAP.1500KG d)(t 34512 t)(v 1850.00 v)(x 1 x)(##)";
+	relanovd[5]= "(m 6 m)(a 1996 a)(g 2 g)(c 0013 c)(b CARRO DE MAO b)(d CARRO DE MAO DE METAL COM PNEU DE CAMARA d)(t 36240 t)(v 144.50 v)(x 1 x)(##)(m 6 m)(a 1996 a)(g 2 g)(c 0013 c)(b CARRO DE MAO b)(d CARRO DE MAO DE METAL COM PNEU DE CAMARA d)(t 36241 t)(v 144.50 v)(x 1 x)(##)(m 6 m)(a 1996 a)(g 2 g)(c 0013 c)(b CARRO DE MAO b)(d CARRO DE MAO DE METAL COM PNEU DE CAMARA d)(t 36242 t)(v 144.50 v)(x 1 x)(##)(m 6 m)(a 1996 a)(g 2 g)(c 0022 c)(b BICICLETA b)(d BICICLETA MODELO MONARK BARRA DUPLA  d)(t 36243 t)(v 980.50 v)(x 1 x)(##)(m 6 m)(a 1996 a)(g 2 g)(c 0013 c)(b CARRO DE MAO b)(d CARRO DE MAO DE METAL  d)(t 36244 t)(v 144.50 v)(x 1 x)(##)(m 6 m)(a 1996 a)(g 2 g)(c 0013 c)(b CARRO DE MAO b)(d CARRO DE MAO DE METAL  d)(t 36245 t)(v 144.50 v)(x 1 x)(##)(m 6 m)(a 1996 a)(g 2 g)(c 0013 c)(b CARRO DE MAO b)(d CARRO DE MAO DE METAL  d)(t 36246 t)(v 144.50 v)(x 1 x)(##)(m 6 m)(a 1996 a)(g 2 g)(c 0022 c)(b BICICLETA b)(d BICICLETA MODELO MONARK BARRA DUPLA  d)(t 36247 t)(v 980.50 v)(x 1 x)(##)(m 6 m)(a 1996 a)(g 2 g)(c 0022 c)(b BICICLETA b)(d BICICLETA MODELO MONARK BARRA DUPLA  d)(t 36248 t)(v 980.50 v)(x 1 x)(##)";
+	relanovd[6]= "(m 2 m)(a 1997 a)(g 2 g)(c 0024 c)(b CARROCA REBOCAVEL b)(d CARROCA REBOCAVEL P/TRANSP.DE LIXO CACAMBA FORRADA CHAPA MET.N.14 CAP.1500KG d)(t 37595 t)(v 1640.00 v)(x 1 x)(##)(m 7 m)(a 1997 a)(g 2 g)(c 0024 c)(b CARROCA REBOCAVEL b)(d CARROCA REBOCAVEL P/TRANSP.DE LIXO CACAMBA FORRADA CHAPA MET.N.14 CAP.1500KG d)(t 37845 t)(v 1640.00 v)(x 1 x)(##)";
+	relanovd[7]= "(m 4 m)(a 2001 a)(g 2 g)(c 0014 c)(b CARRO PLATAFORMA b)(d CARRO PLATAFORMA PNEU COM CAMARA CAPACIDADE DE 700KG d)(t 38590 t)(v 940.00 v)(x 1 x)(##)";
+	relanovd[8]= "(m 4 m)(a 2004 a)(g 2 g)(c 0040 c)(b MOTORCICLETA b)(d MODELO YAMAHA 250 XL d)(t 38677 t)(v 7940.00 v)(x 1 x)(##)(m 4 m)(a 2004 a)(g 2 g)(c 0040 c)(b MOTORCICLETA b)(d MODELO YAMAHA 250 XL d)(t 38678 t)(v 7940.00 v)(x 1 x)(##)(m 4 m)(a 2004 a)(g 2 g)(c 0040 c)(b MOTORCICLETA b)(d MODELO HONDA CB750 XL d)(t 38677 t)(v 22940.00 v)(x 1 x)(##)";
+	relanovd[9]= "(m 11 m)(a 2008 a)(g 2 g)(c 0022 c)(b BICICLETA b)(d BICICLETA MODELO MONARK BARRA DUPLA  d)(t 38764 t)(v 980.50 v)(x 1 x)(##)(m 11 m)(a 2008 a)(g 2 g)(c 0022 c)(b BICICLETA b)(d BICICLETA MODELO MONARK BARRA DUPLA  d)(t 38765 t)(v 980.50 v)(x 1 x)(##)(m 11 m)(a 2008 a)(g 2 g)(c 0022 c)(b BICICLETA b)(d BICICLETA MODELO MONARK BARRA DUPLA  d)(t 38766 t)(v 980.50 v)(x 1 x)(##)(m 11 m)(a 2008 a)(g 2 g)(c 0026 c)(b VW b)(d MODELO GOL DUAS PORTAS COM A/C E DIR.HIDRAULICA d)(t 38822 t)(v 44580.00 v)(x 1 x)(##)";
+	relanovd[10]= "(m 3 m)(a 2010 a)(g 2 g)(c 0026 c)(b VW b)(d MODELO GOL DUAS PORTAS COM A/C E DIR.HIDRAULICA d)(t 39052 t)(v 44580.00 v)(x 1 x)(##)(m 3 m)(a 2010 a)(g 2 g)(c 0026 c)(b VW b)(d MODELO GOL DUAS PORTAS COM A/C E DIR.HIDRAULICA d)(t 39053 t)(v 44580.00 v)(x 1 x)(##)(m 3 m)(a 2010 a)(g 2 g)(c 0029 c)(b GM b)(d MODELO CRUZE COM A/C DIR. HIDRAULICA E CAMBIO AUTOMATICO d)(t 39054 t)(v 83758.90 v)(x 1 x)(##)(m 3 m)(a 2010 a)(g 2 g)(c 0029 c)(b GM b)(d MODELO CRUZE COM A/C DIR. HIDRAULICA E CAMBIO AUTOMATICO d)(t 39055 t)(v 83758.90 v)(x 1 x)(##)(m 3 m)(a 2010 a)(g 2 g)(c 0029 c)(b GM b)(d MODELO CRUZE COM A/C DIR. HIDRAULICA E CAMBIO AUTOMATICO d)(t 39056 t)(v 83758.90 v)(x 1 x)(##)(m 5 m)(a 2010 a)(g 2 g)(c 0030 c)(b HONDA b)(d MODELO CR-V 4X4 A/C DIR. ELETRICA CAMBIO MANUAL d)(t 39057 t)(v 92149.65 v)(x 1 x)(##)(m 5 m)(a 2010 a)(g 2 g)(c 0030 c)(b HONDA b)(d MODELO CR-V 4X4 A/C DIR. ELETRICA CAMBIO MANUAL d)(t 39058 t)(v 92149.65 v)(x 1 x)(##)(m 5 m)(a 2010 a)(g 2 g)(c 0030 c)(b HONDA b)(d MODELO CR-V 4X4 A/C DIR. ELETRICA CAMBIO MANUAL d)(t 39059 t)(v 92149.65 v)(x 1 x)(##)(m 6 m)(a 2010 a)(g 2 g)(c 0030 c)(b HONDA b)(d MODELO CR-V 4X4 A/C DIR. ELETRICA CAMBIO MANUAL d)(t 40038 t)(v 92149.65 v)(x 1 x)(##)(m 11 m)(a 2010 a)(g 2 g)(c 0030 c)(b HONDA b)(d MODELO CR-V 4X4 A/C DIR. ELETRICA CAMBIO MANUAL d)(t 40105 t)(v 92149.65 v)(x 1 x)(##)(m 11 m)(a 2010 a)(g 2 g)(c 0030 c)(b HONDA b)(d MODELO CR-V 4X4 A/C DIR. ELETRICA CAMBIO MANUAL d)(t 40106 t)(v 92149.65 v)(x 1 x)(##)(m 11 m)(a 2010 a)(g 2 g)(c 0014 c)(b CARRO PLATAFORMA b)(d CARRO PLATAFORMA PNEU COM CAMARA CAPACIDADE DE 700KG d)(t 40107 t)(v 483.03 v)(x 1 x)(##)(m 11 m)(a 2010 a)(g 2 g)(c 0014 c)(b CARRO PLATAFORMA b)(d CARRO PLATAFORMA PNEU COM CAMARA CAPACIDADE DE 700KG d)(t 40108 t)(v 483.03 v)(x 1 x)(##)(m 11 m)(a 2010 a)(g 2 g)(c 0014 c)(b CARRO PLATAFORMA b)(d CARRO PLATAFORMA PNEU COM CAMARA CAPACIDADE DE 700KG d)(t 40109 t)(v 483.03 v)(x 1 x)(##)(m 11 m)(a 2010 a)(g 2 g)(c 0014 c)(b CARRO PLATAFORMA b)(d CARRO PLATAFORMA PNEU COM CAMARA CAPACIDADE DE 700KG d)(t 40110 t)(v 483.03 v)(x 1 x)(##)(m 12 m)(a 2010 a)(g 2 g)(c 0028 c)(b MERCEDES BENZ b)(d MODELO CLASSE C350 A/C DIR. ELETRICA CAMBIO AUTOMATICO BC COURO d)(t 40187 t)(v 137435.00 v)(x 1 x)(##)(m 12 m)(a 2010 a)(g 2 g)(c 0028 c)(b MERCEDES BENZ b)(d MODELO CLASSE C350 A/C DIR. ELETRICA CAMBIO AUTOMATICO BC COURO d)(t 40188 t)(v 137435.00 v)(x 1 x)(##)";
+	relanovd[11]= "(m 5 m)(a 2012 a)(g 2 g)(c 0027 c)(b TOYOTA b)(d MODELO HILUX 4X4 CAMBIO MANUAL A/C DIR. ELETRICA d)(t 42015 t)(v 160549.49 v)(x 1 x)(##)(m 5 m)(a 2012 a)(g 2 g)(c 0027 c)(b TOYOTA b)(d MODELO HILUX 4X4 CAMBIO MANUAL A/C DIR. ELETRICA d)(t 42016 t)(v 160549.49 v)(x 1 x)(##)(m 5 m)(a 2012 a)(g 2 g)(c 0027 c)(b TOYOTA b)(d MODELO HILUX 4X4 CAMBIO MANUAL A/C DIR. ELETRICA d)(t 42017 t)(v 160549.49 v)(x 1 x)(##)(m 10 m)(a 2012 a)(g 2 g)(c 0028 c)(b MERCEDES BENZ b)(d MODELO SPRINTER COM CAPACIDADE PARA 24 PESSOAS A/C  d)(t 43027 t)(v 177568.00 v)(x 1 x)(##)(m 10 m)(a 2012 a)(g 2 g)(c 0028 c)(b MERCEDES BENZ b)(d MODELO SPRINTER COM CAPACIDADE PARA 24 PESSOAS A/C  d)(t 43028 t)(v 177568.00 v)(x 1 x)(##)(m 10 m)(a 2012 a)(g 2 g)(c 0028 c)(b MERCEDES BENZ b)(d MODELO SPRINTER COM CAPACIDADE PARA 24 PESSOAS A/C  d)(t 43029 t)(v 177568.00 v)(x 1 x)(##)(m 10 m)(a 2012 a)(g 2 g)(c 0028 c)(b MERCEDES BENZ b)(d MODELO CLASSE C350 A/C DIR. ELETRICA CAMBIO AUTOMATICO BC COURO d)(t 43030 t)(v 137435.00 v)(x 1 x)(##)";
+	relanovd[12]= "(m 8 m)(a 2013 a)(g 2 g)(c 0014 c)(b CARRO PLATAFORMA b)(d CARRO PLATAFORMA PNEU COM CAMARA CAPACIDADE DE 700KG d)(t 43260 t)(v 483.03 v)(x 1 x)(##)";
+	relanovd[13]= "(m 2 m)(a 2015 a)(g 2 g)(c 0026 c)(b VW b)(d MODELO TIGUAN 7 LUGARES A/C DIR. ELETRICA CAMBIO MANUAL  d)(t 43261 t)(v 136251.00 v)(x 1 x)(##)";
+	relanovd[14]= "(m 2 m)(a 2017 a)(g 2 g)(c 0026 c)(b VW b)(d MODELO TIGUAN 7 LUGARES A/C DIR. ELETRICA CAMBIO MANUAL  d)(t 43262 t)(v 136251.00 v)(x 1 x)(##)(m 5 m)(a 2017 a)(g 2 g)(c 0026 c)(b VW b)(d MODELO TIGUAN 7 LUGARES A/C DIR. ELETRICA CAMBIO MANUAL  d)(t 43263 t)(v 136251.00 v)(x 1 x)(##)";
+	relanovd[15]= "(m 1 m)(a 2018 a)(g 2 g)(c 0013 c)(b CARRO DE MAO b)(d CARRINHO DE MAO  COM CA&Ccedil;AMBA METALICA , REFOR&Ccedil;ADA , COM BRA&Ccedil;OS METALICOS , PNEU COM CAMERA d)(t 43522 t)(v 196.37 v)(x 1 x)(##)(m 1 m)(a 2018 a)(g 2 g)(c 0013 c)(b CARRO DE MAO b)(d CARRINHO DE MAO  COM CA&Ccedil;AMBA METALICA , REFOR&Ccedil;ADA , COM BRA&Ccedil;OS METALICOS , PNEU COM CAMERA d)(t 43523 t)(v 196.37 v)(x 1 x)(##)";
+	relanovd[16]= "(m 11 m)(a 2021 a)(g 2 g)(c 0014 c)(b CARRO PLATAFORMA b)(d CARRO PLATAFORMA PNEU COM CAMARA CAPACIDADE DE 700KG d)(t 43803 t)(v 985.00 v)(x 1 x)(##)(m 11 m)(a 2021 a)(g 2 g)(c 0014 c)(b CARRO PLATAFORMA b)(d CARRO PLATAFORMA PNEU COM CAMARA CAPACIDADE DE 700KG d)(t 43804 t)(v 985.00 v)(x 1 x)(##)(m 11 m)(a 2021 a)(g 2 g)(c 0014 c)(b CARRO PLATAFORMA b)(d CARRO PLATAFORMA PNEU COM CAMARA CAPACIDADE DE 700KG d)(t 43805 t)(v 985.00 v)(x 1 x)(##)(m 11 m)(a 2021 a)(g 2 g)(c 0014 c)(b CARRO PLATAFORMA b)(d CARRO PLATAFORMA PNEU COM CAMARA CAPACIDADE DE 700KG d)(t 43806 t)(v 985.00 v)(x 1 x)(##)";
+	btu = true;
+	rxx = "";
+	bensselec = "**";
+	tomboselec = "()"
+	csitselec = "**";
+	valselec = "**";
+	reltodo = "";
+	numbotlig = 0;
+	mesx = [];
+	anox = [];
+	nomex = [];
+	descx = [];
+	tombox = [];
+	cbemx = [];
+	qtx = [];
+	valx = [];
+	clx = [];
+	csitx = [];
+	bmx = [];
+	bnmx = [];
+	bdmx = [];
+	csitsel = [];
+	csits = [];
+	sits = [];
+	anor = [];
+	nomer = [];
+	qtdr = [];
+	valr = [];
+	nomet = [];
+	qtdt = [];
+	valt = [];
+	linrt = [];
+	linrt2 = [];
+	lnb = [];
+	lnqb = [];
+	dlna = "";
+	lbens = [];
+	lcbens = [];
+	lcrit = [];
+	maiorano = 0;
+	anosc = [];
+	ltot = [];
+	//ltot2 = [];
+	nmt = 0;
+	ctsiafi = "";
+	dxsiafi = "";
+	corestel=0;
+	qrel = 1;
+	leuano = 0;
+	upa = "1a";
+	radsel = 1;
+	benssel = [];
+	sitsel = [];
+	xt = 0;
+	if (document.getElementById("selhd").value == "") {
+		vesit();
+		telasit(relsit);
+	}
+}
+function resbens(){
+	if (document.getElementById("restotbem").style.display == "inline") {
+		document.getElementById("restotbem").style.display = "none";
+		document.getElementById("verestot").innerHTML = "Mostrar";
+		return false;
+	}
+	document.getElementById("verestot").innerHTML = "Ocultar";
+	document.getElementById("restotbem").style.display = "inline";
+}
+function verrel(){
+	if (document.getElementById("geral").style.display == "inline") {
+		document.getElementById("geral").style.display = "none";
+		document.getElementById("resrel").style.display = "inline";
+	} else {
+		document.getElementById("resrel").style.display = "none";
+		document.getElementById("geral").style.display = "inline";
+	}
+}
+function qualrel(a) {
+	document.getElementById("relacoes").style.display = "inline";
+	document.getElementById("rlt1").setAttribute("class","l2");
+	document.getElementById("rlt2").setAttribute("class","l2");
+	document.getElementById("rlt3").setAttribute("class","l2");
+	document.getElementById("rlt4").setAttribute("class","l2");
+	document.getElementById("rlt5").setAttribute("class","l2");
+	document.getElementById("sd1").innerHTML = "";
+	document.getElementById("sd2").innerHTML = "";
+	document.getElementById("sd3").innerHTML = "";
+	document.getElementById("sd4").innerHTML = "";
+	document.getElementById("sd5").innerHTML = "";
+	document.getElementById("rlt"+a).setAttribute("class","l1");
+	if (document.getElementById("selhd").value == "S") {
+		document.getElementById("rlt5").setAttribute("class","ls");
+	}
+	document.getElementById("sd"+a).innerHTML = "<b class='setab'>&nbsp;>&nbsp;</b>";
+	document.getElementById("relanos").style.display = "none";
+	document.getElementById("relbens").style.display = "none";
+	document.getElementById("restotbem").style.display = "none";
+	document.getElementById("selcrit").style.display = "none";
+	document.getElementById("reltipobem").style.display = "none";
+	titx = "Escolha A Relação de Bens";
+	document.getElementById("mdmtx").style.display = "none";
+	document.getElementById("mdmty").style.display = "none";
+	switch (a) {
+		case 1 :
+			document.getElementById("relanos").style.display = "inline";
+			titx = "<font style='font-size:15px;font-weight:bold'><u>Relação de Totais por Tipo do Bem dos Anos Indicados</u></font>";
+			break;
+		case 2 :
+			document.getElementById("restotbem").style.display = "inline";
+			titx = "<font style='font-size:15px;font-weight:bold'><u>Resumo de Bens Adquiridos</u></font>";
+			break;
+		case 3 :
+			irdx = 1;
+			document.getElementById("relbens").style.display = "inline";
+			titx = "<font style='font-size:15px;font-weight:bold'><u>Relação de Bens Por Data de Aquisição</u></font>";
+			document.getElementById("mdmtx").style.display = "inline";
+			break;
+		case 4 :
+			irdx = 2;
+			document.getElementById("reltipobem").style.display = "inline";
+			titx = "<font style='font-size:15px;font-weight:bold'><u>Relação de Bens Por Tipo de Bem</u></font>";
+			titx = titx+"&nbsp;&nbsp;&nbsp;<button onClick='imp();'>Preparar Impressão da Lista</button>";
+			document.getElementById("mdmty").style.display = "inline";
+			break;
+		case 5 :
+			document.getElementById("selcrit").style.display = "inline";
+			titx = "<font style='font-size:15px;font-weight:bold'><u>Relação de Bens Por Critério de Bem/Valor</u></font>";
+			break;
+	}
+	document.getElementById("relesc").innerHTML = titx;
+}
+function mostrasiafi(a,b) {
+	calc(a,b);
+	telasiafi = relsiafi.substr(0,relsiafi.indexOf("||*||"));
+	document.getElementById("tabsiafi").style.display = "none";
+	document.getElementById("lisanos").innerHTML = telasiafi;
+	totbs = document.getElementById("totbsiafi").innerHTML;
+	ini = 0;
+	el = relsiafi.substr(relsiafi.indexOf("||*||")+5);
+	//alert(el)
+	af = el.indexOf("(##)");
+	//listab = "<span class='l2'><b>-Itens do Siafi</b></span><br><table class='tbx'><tr class='l1'>";
+	listab = "<br><table class='tbx'><tr class='l1'>";
+	npl = 3;
+	ipl = 0;
+	ct = 0;
+	lz = "l1";
+	while (af > -1) {
+		bem = el.substr(ini,af-ini);
+		cgr = sbem(bem,"g");
+		citem = sbem(bem,"c");
+		citem = cgr+"@"+citem;
+		nitem = sbem(bem,"n");
+		if (ipl == npl) {
+			if (lz == "l1") {
+				lz = "l2";
+			} else {
+				lz = "l1";
+			}
+			listab = listab+"</tr><tr class='"+lz+"'>"
+			ipl = 1;
+		} else {
+			ipl = ipl+1;
+		}
+		listab = listab+"<td width=270><input type='checkbox' id='lbx"+ct+"' value='"+citem+"' onClick='desmarcar(1);' checked> "+nitem+"</td>";
+		benssel.push(citem);
+		ini = af+4;
+		af = el.indexOf("(##)",ini);
+		ct = ct+1;
+	}
+	qtlb = ct;
+	listab = listab+"</tr></table>";
+}
+function mostracontas() {
+	reltodo = "";
+	document.getElementById("tabsiafi").style.display = "inline";
+	document.getElementById("lisanos").innerHTML = "";
+	document.getElementById("selhd").value = "";
+	inicia();
+}
+function trel(a,b){
+	nmt = 1;
+	//document.getElementById("resrel").style.display = "none";
+	if (reltodo == "") {
+		reltodo = "trar";
+	}
+	//document.getElementById("geral").style.display = "inline";
+	ct = 0;
+	ccx = 0;
+	document.getElementById("mccx").style.display = "inline";
+	while (ct < a) {
+		ct = ct+1;
+		sano = document.getElementById("op"+ct).getAttribute("ano");
+		ccy = (parseFloat(document.getElementById("qanobsiafi"+sano).innerHTML)/parseFloat(totbs))*100;
+		ccx = ccx+ccy;
+		if (document.getElementById("op"+ct).innerHTML.indexOf(reltodo) >= 0) {
+			document.getElementById("op"+ct).click();
+		}
+		document.getElementById("vccx").innerHTML = ccx.toLocaleString('pt-BR',{minimumFractionDigits: 2,maximumFractionDigits: 2});
+	}
+	cempc = 100;
+	if (reltodo == "trar") {
+		document.getElementById("vccx").innerHTML = cempc;
+		if (leuano == 1) {
+			alert("Concluído!");
+			leuano = 0;
+		}
+		reltodo = "tar";
+		b.innerHTML = "<b>Ocultar<br>Todos</b>";
+		b.setAttribute("class","bt2");
+	} else {
+		reltodo = "trar";
+		b.innerHTML = "Mostrar<br>Todos";
+		b.setAttribute("class","bt1");
+	}
+	document.getElementById("mccx").style.display = "none";
+	nmt = 0;
+}
+function relcontinua(){
+	tp2 = "(("+topn+"))";
+	topn = topn+1100;
+	relcabec = relcabec.replace(topp,"top:"+topn);
+	relcabec = relcabec.replace(tp2,"(("+topn+"))");
+	topp = "top:"+topn;
+	if (lit2 > 6) {
+		apa = 0;
+		npa = lit-(lits-limitepag);
+		for (ii = 0; ii < npa; ii++) {
+			apa = apa+1;
+			apa = itrel.indexOf("<tr ano",apa);
+		}
+		lits = lit-npa+1;
+		apa = apa+5;
+		apa = itrel.indexOf("</tr>",apa)+5;
+		rlt = rlt+itrel.substr(0,apa);
+		rlt = rlt+"<tr><td colspan=3> <b><i>Continua na próxima página</i> (*"+topp+")</b></td></tr></table></td></tr></table><br>"+"</span>"+relcabec;
+		ninitrel = 0;
+		//ninitrel = itrel.indexOf("<table");
+		ninitrel2 = itrel.indexOf("<tr ano")-ninitrel;
+		initrel = itrel.substr(ninitrel,ninitrel2);
+		conttrel = itrel.substr(apa);
+		itrel = initrel+conttrel;
+		if (itrel.indexOf("- <i>Continuação</i>") == -1){
+			itrel = itrel.replace("<br>Q"," - <i><b>Continuação</b></i><br>Q");
+		}
+		//rlt = rlt+itrel;
+	} else {
+		lits = 1;
+		rlt = rlt+itrel+"(**"+topp+")"+"</span>"+relcabec;
+	}
+}
+function cabitrel(){
+	i1 = itrel.indexOf("<td> ");
+	f1 = itrel.indexOf("</td>",i1)+5;
+	citrel = citrel+"<tr><td>Tipo do Bem: </td>"+itrel.substr(i1,f1-i1)+"</tr>";
+	i1 = itrel.indexOf("<td ",f1);
+	f1 = itrel.indexOf("</td>",i1)+5;
+	citrel = citrel+"<tr><td>Quantidade Total: </td>"+itrel.substr(i1,f1-i1)+"</tr>";
+	i1 = itrel.indexOf("<td ",f1);
+	f1 = itrel.indexOf("</td>",i1);
+	citrel = citrel+"<tr><td>Valor total dos Bens na Aquisição: </td>"+itrel.substr(i1,f1-i1)+"</tr></table>";
+	citrel = citrel+"<table><tr><td width=80 align='center'> A N O&nbsp;&nbsp;</td>";
+	citrel = citrel+"<td width=85>Qtd. no Ano&nbsp;&nbsp;</td>";
+	citrel = citrel+"<td width=140 align='right'>Valor no Ano(R$)&nbsp;&nbsp;</td></tr>";
+}
+function relano(){
+	itrel = itrel.replace("<div class='c80'","<td width=80");
+	itrel = itrel.replace("</div>","</td>")
+	itrel = itrel.replace("<div class='c85'","<td width=85");
+	itrel = itrel.replace("</div>","</td>")
+	itrel = itrel.replace("<div class='c140'","<td width=140");
+	itrel = itrel.replace("</div>","</td>")
+	itrel = itrel.replace("</div>","</tr>")
+}
+function pagrel(relres){
+	relcabec = "<span style='position:absolute;top:0px;'>((0))<b>PatriBens</b><br>Diretoria de Planejamento e Administração<br>Divisão de Manutenção Predial e Gestão do Patrimônio<br>Sistema de Consultas de Bens da Patribens<br>Conta Siafi: "+cs+" - "+ds+"<hr><br>";
+	rlt = relcabec;
+	topp = "top:0";
+	topn = 0;
+	isp = 0;
+	document.getElementById("resimp").innerHTML = liny;
+	fsp = liny.indexOf("</span>")+7;
+	lits = 0;
+	limitepag = 40;
+	while (fsp > 6) {
+		itrel = linx.substr(isp,fsp-isp);
+		itrel = itrel.replace("<dir><dir>").replace("</dir></dir>");
+		citrel = "<table>";
+		cabitrel();
+		lit = 4;
+		lits = lits+4;
+		ilin = 0;
+		anor = itrel.indexOf("<div ano",ilin);
+		citrel = citrel +"<table><tr>";
+		while (anor > -1) {
+			lit = lit+1;
+			lits = lits+1;
+			relano();
+			ilin = anor+20;
+			anor = itrel.indexOf("<div ano",ilin);
+		}
+		itrel = citrel+"</table></td></tr></table>";
+		lit2 = lit;
+		if (lits > limitepag-6) {
+			relcontinua();
+		}
+		isp = fsp;
+		fsp = liny.indexOf("</span>",isp+1)+7;
+		rlt = rlt+itrel;
+	}
+	rlt = rlt+"</span>";
+	return rlt;
+}
+function cores(){
+	ss = document.styleSheets[0].cssRules;
+	if (corestel == 0) {
+		ss[0].style.backgroundColor = "#cceebb";
+		ss[0].style.color = "#115533";
+		ss[3].style.backgroundColor = "#ddffcc";
+		ss[4].style.backgroundColor = "#d0f0c0";
+		ss[5].style.backgroundColor = "#ccffbb";
+		ss[6].style.backgroundColor = "#eeffbb";
+		ss[12].style.color = "#227722";
+		ss[13].style.backgroundColor = "#bbffcc";
+		ss[14].style.backgroundColor = "#eeeedd";
+		ss[18].style.borderColor = "#225522";
+		ss[20].style.backgroundColor = "#ddffaa";
+		ss[21].style.backgroundColor = "#99ffaa";
+		corestel = 1;
+	} else {
+		ss[0].style.backgroundColor = "#051505";
+		ss[0].style.color = "#aaffcc";
+		ss[3].style.backgroundColor = "#225522";
+		ss[4].style.backgroundColor = "#334422";
+		ss[5].style.backgroundColor = "#336622";
+		ss[6].style.backgroundColor = "#445522";
+		ss[12].style.color = "#227722";
+		ss[12].style.backgroundColor = "#ffddaa";
+		ss[13].style.backgroundColor = "#ffddaa";
+		ss[14].style.backgroundColor = "#eeccbb";
+		ss[18].style.borderColor = "#ddffcc";
+		ss[20].style.backgroundColor = "#ffddaa";
+		ss[21].style.backgroundColor = "#ffdd99";
+		corestel = 0;
+	}
+}
+function imp(){
+	lisbens = lisbens.replace("<dir><dir>","");
+	lisbens = lisbens.replace("</dir></dir>","");
+	//while (lisbens.indexOf("<br><br>") > -1) {
+		lisbens = lisbens.replace(/<br><br>/g,"");
+		lisbens = lisbens.replace(/<table class='tbx'>/g,"");
+		lisbens = lisbens.replace(/<\/table>/g,"");
+	//}
+	cabec = "<span style='position:relative'><br><b>Patribens</b><br>Diretoria de Planejamento e Administração<br>Divisão de Manutenção Predial e Gestão do Patrimônio<br>Sistema de Consultas de Bens da Patribens<hr>"+rctsiafi+" - "+rdxsiafi+"<br>Relação de Bens Por Tipo de Bem</span><hr>";
+	rod = "<div style='position:relative;top:880;text-align:right'>Página - ### de @@##@@</div>";
+	itab = "<table class='tabimp' width=700><tr valign='bottom'><td width=30 style='max-width:30;'>Item</td><td width=40 style='max-width:40;'>Data de<br>Aquisição</td><td width=40 style='max-width:40;'>Tombo</td><td width=460 style='max-width:460;'>Descrição</td><!--td width=40 style='max-width:40;'>Marcação</td--><td width=80 style='max-width:80;' align='right'>Valor(R$)</td></tr>";
+	tcr = "<style>@page {size: auto; margin: 0mm 10mm 0mm 10mm;} .tabimp {font-size:11px;max-width:800px;}</style>";
+	ftab = "</table><div style='page-break-after:always;'></div>";
+	tab = tcr;
+	nump = 0;
+	janela = window.open("","","status,top=200,left=250,height=50,width=80");
+	pagina = tcr;
+	paginas = pagina;
+	nlin = 50;
+	ftr = lisbens.indexOf("</tr>");
+	itr = lisbens.indexOf("<tr",ftr);
+	ulpag = 830;
+	contador = 0;
+	while (itr > -1) {
+		ftr = lisbens.indexOf("</tr>",itr);
+		lx = lisbens.substr(itr,ftr+5-itr);
+		if (lx.indexOf("nrel") == -1) {
+			contador = contador+1;
+			lx = lx.replace("<tr","<tr valign='top'");
+			//lx = lx.replace("<td","<td valign='top' align='right'>"+contador+"*$@$</td><td");
+			lx = lx.replace("<td","<td valign='top' align='right'>"+contador+"&nbsp;</td><td");
+			ib = lx.indexOf(" class");
+			fb = lx.indexOf(">",ib);
+			lx = lx.replace(lx.substr(ib,fb-ib),"");
+			ib = lx.indexOf(" title='");
+			lx = lx.replace(" title='",">");
+			ib = lx.indexOf("'>",ib+1);
+			fb = lx.indexOf("</td>",ib);
+			lx = lx.replace(lx.substr(ib,fb-ib),"");
+			ib = lx.indexOf("ficha(")+6;
+			ib2 = lx.indexOf(")",ib)-ib;
+			tblx = lx.substr(ib,ib2);
+			if ( document.getElementById("chk"+tblx).checked) {
+				lx = lx.replace("'checkbox' ", "'checkbox' checked ")
+			}
+			lx = lx.replace("'checkbox' ", "'checkbox' style='position:relative;width:10px;top:-3px;' ")
+			ib = lx.indexOf("<a onC");
+			fb = lx.indexOf(">",ib);
+			lx = lx.replace(lx.substr(ib,fb-ib+1),"");
+			lx = lx.replace("</a>","");
+			ib = lx.indexOf(" id='c");
+			fb = lx.indexOf(">",ib);
+			lx = lx.replace(lx.substr(ib,fb-ib),"");
+			document.getElementById("impp").innerHTML = itab+tab+"</table>";
+			ofh = document.getElementById("impp").offsetHeight;
+			nlin = ofh;
+			if (nlin > ulpag) {
+				tab = tab.replace(lx,"");
+				flin = nlin-ulpag;
+				tab = tab.replace(lx,"");
+				nump = nump+1;
+				rodp = rod.replace("###",nump);
+				pagina = cabec+rodp+itab+tab+ftab;
+				paginas = paginas+pagina;
+				//tab = lx;
+				tab = "";
+			}
+			lx = lx.replace("$@$",ofh)
+			tab = tab+lx;
+		}
+		ftr = itr+1;
+		itr = lisbens.indexOf("<tr",ftr); 
+	}
+	nump = nump+1;
+	document.getElementById("impp").innerHTML = "<table width=700>"+lx+"</table>";
+	rodp = rod.replace("###",nump);
+	pagina = cabec+rodp+itab+tab+ftab;
+	paginas = paginas+pagina;
+	paginas = paginas.replace(/@@##@@/g,nump)
+	impag();
+}
+function impag () {
+	janela.document.write(paginas);
+	janela.print();
+}
+</script>
+<style>
+body {
+	font-family:Verdana;
+	color:#aaffcc;
+	font-size:12px;
+	opacity:1;
+	text-shadow:0px;
+	background-color:051505;
+}
+table {
+	font-size:12px;
+}
+.mostraano{
+	position:absolute;
+	left:300;
+	top:100;
+}
+.nument {
+	text-align:right;
+	color:#338844;
+	background-color:#aaffbb;
+}
+.numentfx {
+	text-align:right;
+	color:#aaffbb;
+	background-color:#668844;
+}
+.l1, .nrel {
+	background-color:#225522;
+}
+.l2 {
+	background-color:#334422;
+}
+.l3 {
+	background-color:#336622;
+}
+.l4 {
+	background-color:#445522;
+}
+.lx {
+	background-color:#447744;
+}
+.ls {
+	background-color:#ffddaa;
+	color:442211;
+}
+.idt {
+	padding:5px 7px 5px 7px;
+	border:1px solid;
+}
+.setab {
+	background-color:aaffcc;
+	color:051545;
+	font-size:13px;
+	padding:1px;
+	border-radius:5px;
+	font-weight:bold;
+}
+.tbcab {
+	color:#ddffcc;
+	background-color:#001000;
+	//border-top:0px;
+	//border-bottom:5px;
+	//border-left:0px;
+	//border-right:0px;
+	//border-style:inset;
+	//border-color:224422;
+	//font-size:13px;
+	//color:#aaffcc
+	//background-color:051505
+}
+.tbx {
+	border:1px solid;
+}
+.reldettot {
+	background-color:102010;
+	max-width:100px;
+	max-height:200px;
+}
+button {
+	font-size:12px;
+	background-color:#ffddaa;
+}
+.bt1 {
+	font-size:12px;
+	width:65px;
+	color:#227722;
+	background-color:#ffddaa;
+}
+.bt2 {
+	font-size:12px;
+	font-weight:bold;
+	color:#dd2222;
+	width:65px;
+	background-color:#eeccbb;
+}
+.bt1x {
+	font-size:12px;
+	width:200px;
+	color:#227722;
+	background-color:#ffddaa;
+}
+.bt2x {
+	font-size:12px;
+	font-weight:bold;
+	color:#dd2222;
+	width:200px;
+	background-color:#eeccbb;
+}
+.bta {
+	font-size:12px;
+	width:100px;
+	color:#227722;
+	background-color:#ffddaa;
+}
+.btb {
+	font-size:12px;
+	font-weight:bold;
+	color:#dd2222;
+	width:100px;
+	background-color:#eeccbb;
+}
+.bt3 {
+	font-size:12px;
+	color:#227722;
+	background-color:#ffddaa;
+	padding:0px 3px 0px 3px;
+}
+.dt {
+	border:1px dashed #bbddcc;
+}
+.tbd {
+	display:flex;
+	background-color:ffeebb;
+	color:#224466;
+}
+.tbdc {
+	display:flex;
+	color:#aaddbb;
+}
+.tbd1 {
+	display:flex;
+	background-color:#ffddaa;
+	color:#224466;
+}
+.tbd2 {
+	display:flex;
+	background-color:#ffeebb;
+	color:#224466;
+}
+.tbddupa1 {
+	display:flex;
+	background-color:#aaddbb;
+	color:#334433;
+}
+.tbddupa2 {
+	display:flex;
+	background-color:#aabbdd;
+	color:#334433;
+}
+.xtbdb1 {
+	background-color:#225522;
+	color:#aaddbb;
+}
+.tbdb1a {
+	display:flex;
+	background-color:#337722;
+	color:#aaddbb;
+}
+.tbdb1b {
+	display:flex;
+	background-color:#448822;
+	color:#aaddbb;
+}
+.xtbdb1a {
+	background-color:#337722;
+	color:#aaddbb;
+}
+.xtbdb1b {
+	background-color:#448822;
+	color:#aaddbb;
+}
+.xtbdb2 {
+	background-color:#446622;
+	color:#aaddbb;
+}
+.c40 {
+	width:40px;
+}
+.c50 {
+	width:50px;
+}
+.c70 {
+	width:70px;
+}
+.c85 {
+	width:85px;
+}
+.c140 {
+	width:140px;
+}
+.c500 {
+	width:500px;
+}
+a:link {
+	color:#dddddd;
+}
+a:visited {
+	color:#eeddee;
+}
+a:hover {
+	color:#f0f0f0;
+}
+.area-siafi {
+	position:absolute;
+	left:100px;
+	top:600px;
+	max-height:10px;
+	overflow:hidden;
+	visibility:hidden;
+}
+.xvm {
+	color:#ff5555;
+	font-size:13px;
+	background-color:#ddddaa;
+	font-weight:bold;
+}
+.tvd {
+	color:#225533;
+	font-size:13px;
+	font-weight:bold;
+	background-color:#ffddaa;
+}
+x {
+	background-color:#608040;
+	color:#ffffaa;
+	font-weight:bold;
+	text-decoration:underline dotted;
+}
+.bx {
+	border:1px, solid;
+	spacing:5px;
+	border-color:224422;
+	font-weight:bold;
+	font-size:15px;
+}
+.ll1 {
+	background-color:ffeebb;
+}
+.ll2 {
+	background-color:ffddaa;
+}
+.tabimp {
+	font-size:11px;
+}
+</style>
+</head>
+<body xonLoad="iniciatot();" onclick="tiratela();">
+<!-- Apresentação -->
+<!-- Apresentação -->
+<!-- Apresentação -->
+<dir><dir>
+<div id="apres" style="background-color:eeeeaa;color:225533;padding:20px;width:900px;text-align:justify;border:5px solid;border-color:225533;">
+<table width=900 style="position:fixed;top:12px;z-index:1" class="tbx" bgcolor="aaaa77">
+<tr><td align="center"><font size=+2> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <b>APRESENTAÇÃO</b></font> </td><td align="right"><button onClick="document.getElementById('apres').innerHTML='Iniciando o funcionamento do Sistema';document.getElementById('apres').style.display='none';document.getElementById('sistpatri').style.display='inline';iniciatot();">Fechar esta tela de Apresentação<br>e mostrar o funcionamento do sistema.</button></td></tr>
+</table>
+<br><br><br><br><br>
+Este sistema foi desenvolvido pra realizar Consultas de Bens e Valores no Sistema de Patrimônio da Patribens.
+<br><br>
+O sistema foi desenvolvido em PHP e JavaScript e traz os dados de um banco SQL. Para esta apresentação esta página foi desenvolvida no HTML básico e em JavaScript. Os dados nesta página contêm descrição e valores fictícios e são carregados diretamente. Por isso foi colocada a mensagem de que os dados foram carregados. Outra mensagem que é mostrada é a conclusão da busca de mostrar todos os anos porque como o sistema traz as informações de um banco de dados este tempo de resposta não é instantâneo. Outro aspecto aqui é que as imagens (logomarca e setas) foram substituídas por simulações. 
+Não existe atualização destes dados por aqui. Esta apresentação mostra <b>apenas</b> uma conta, <b><u>55/4800 - VEICULOS DIVERSOS</u></b>, que contém veículos motorizados e não motorizados.
+<br><br>
+De início são apresentados o cabeçalho e as contas do sistema para a consulta.
+<br><br>
+<div style="background-color:051505;color:aaffcc;padding:20px">
+<table class="tbcab" width="100%"><tbody><tr valign="top"><td width="90"><!--img src="img/logo.jpg" width="85"--><table class="tbx"><tbody><tr><td rowspan="3" bgcolor="aaeeaa">&nbsp;&nbsp;&nbsp;</td><td rowspan="2"><br><hr style="border-color:aaeeaa;border-style:groove;border-width:4px" width="50%" align="right">ogo<b style="font-size:18px"><i>M</i></b>arca</td></tr><tr></tr><tr><td bgcolor="aaeeaa"><br></td></tr></tbody></table></td><td valign="bottom"><b>Patribens - Empreendimentos Prediais</b><br>Diretoria de Planejamento e Administração<br>Divisão de Manutenção Predial e Gestão do Patrimônio <br>
+<b>Sistema de Consultas de Bens da Patribens</b> <!--span onClick="cores();">*****</span-->
+</td></tr>
+</tbody></table>
+<hr>
+<u>Selecione uma Conta para Consultar. Clique em <b class="setab">&nbsp;&gt;&nbsp;</b><!--img src="img/tdir.png" width="15"--> para selecionar.</u><br><br>
+<table><tbody><tr><td valign="top"><table style="font-size:10px;"><tbody><tr valign="middle"><td><span onclick="mostrasiafi(55/0400,'APARELHOS DE MEDICAO E ORIENTACAO');"><b class="setab">&nbsp;&gt;&nbsp;</b>&nbsp;55/0400  APARELHOS DE MEDICAO E ORIENTACAO </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/1200,'APARELHOS E UTENSILIOS DOMESTICOS');"><b class="setab">&nbsp;&gt;&nbsp;</b>&nbsp;55/1200  APARELHOS E UTENSILIOS DOMESTICOS </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/2400,'EQUIPAMENTO DE PROTECAO, SEGURANCA E SOCORRO');"><b class="setab">&nbsp;&gt;&nbsp;</b>&nbsp;55/2400  EQUIPAMENTO DE PROTECAO, SEGURANCA E SOCORRO </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/3200,'MAQUINAS E EQUIPAMENTOS GRAFICOS');"><b class="setab">&nbsp;&gt;&nbsp;</b>&nbsp;55/3200  MAQUINAS E EQUIPAMENTOS GRAFICOS </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/3400,'MAQUINAS, UTENSILIOS E EQUIPAMENTOS DIVERSOS');"><b class="setab">&nbsp;&gt;&nbsp;</b>&nbsp;55/3400  MAQUINAS, UTENSILIOS E EQUIPAMENTOS DIVERSOS </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/3600,'MAQUINAS, INSTALACOES E UTENS. DE ESCRITORIO');"><b class="setab">&nbsp;&gt;&nbsp;</b>&nbsp;55/3600  MAQUINAS, INSTALACOES E UTENS. DE ESCRITORIO </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/3900,'EQUIPAMENTOS HIDRAULICOS E ELETRICOS');"><b class="setab">&nbsp;&gt;&nbsp;</b>&nbsp;55/3900  EQUIPAMENTOS HIDRAULICOS E ELETRICOS </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/4200,'MOBILIARIO EM GERAL');"><b class="setab">&nbsp;&gt;&nbsp;</b>&nbsp;55/4200  MOBILIARIO EM GERAL </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/4800,'VEICULOS DIVERSOS');"><b class="setab">&nbsp;&gt;&nbsp;</b>&nbsp;55/4800  VEICULOS DIVERSOS </span></td></tr></tbody></table></td><td valign="top">
+<table style="font-size:10px;"><tbody><tr valign="middle"><td><span onclick="mostrasiafi(55/0600,'APARELHOS E EQUIPAMENTOS DE COMUNICACAO');"><b class="setab">&nbsp;&gt;&nbsp;</b>&nbsp;55/0600  APARELHOS E EQUIPAMENTOS DE COMUNICACAO </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/1000,'APARELHOS E EQUIPAMENTOS P/ ESPORTES E DIVERSOES');"><b class="setab">&nbsp;&gt;&nbsp;</b>&nbsp;55/1000  APARELHOS E EQUIPAMENTOS P/ ESPORTES E DIVERSOES </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/1800,'COLECOES E MATERIAIS BIBLIOGRAFICOS');"><b class="setab">&nbsp;&gt;&nbsp;</b>&nbsp;55/1800  COLECOES E MATERIAIS BIBLIOGRAFICOS </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/3000,'MAQUINAS E EQUIPAMENTOS ENERGETICOS');"><b class="setab">&nbsp;&gt;&nbsp;</b>&nbsp;55/3000  MAQUINAS E EQUIPAMENTOS ENERGETICOS </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/3300,'EQUIPAMENTOS PARA AUDIO, VIDEO E FOTO');"><b class="setab">&nbsp;&gt;&nbsp;</b>&nbsp;55/3300  EQUIPAMENTOS PARA AUDIO, VIDEO E FOTO </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/3500,'EQUIPAMENTOS DE PROCESSAMENTOS DE DADOS');"><b class="setab">&nbsp;&gt;&nbsp;</b>&nbsp;55/3500  EQUIPAMENTOS DE PROCESSAMENTOS DE DADOS </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/3800,'MAQUINAS, FERRAMENTAS E UTENSILIOS DE OFICINA');"><b class="setab">&nbsp;&gt;&nbsp;</b>&nbsp;55/3800  MAQUINAS, FERRAMENTAS E UTENSILIOS DE OFICINA </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/4000,'MAQUINAS E EQUIPAMENTOS AGRIC. E RODOVIARIOS');"><b class="setab">&nbsp;&gt;&nbsp;</b>&nbsp;55/4000  MAQUINAS E EQUIPAMENTOS AGRIC. E RODOVIARIOS </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/4400,'OBRAS DE ARTES E PECAS PARA EXPOSICAO');"><b class="setab">&nbsp;&gt;&nbsp;</b>&nbsp;55/4400  OBRAS DE ARTES E PECAS PARA EXPOSICAO </span></td></tr></tbody></table></td></tr></tbody></table>
+
+</div>
+<br><br>
+São mostrados apenas os anos em que os bens da referida conta foram adquiridos. Os anos que não aparecem são os que não houve aquisição destes bens. Em cada ano aparece a quantidade destes bens e o valor de aquisição total relativo àquele ano. Acima da indicação de cada ano estão os totais do bens, de quantidades e de valores de tudo que foi adquirido.
+<br><br>
+
+<div style="background-color:051505;color:aaffcc;padding:20px">
+
+<span class='l2 idt'><b>55/4800 - VEICULOS DIVERSOS</b></span> - <button>Início - Contas Siafi</button>
+<br><br><br><br>
+<table><tr valign='top'>
+<td><table class='tbx'><tr valign=top><td>Anos</td><td align='center'>Qtd de Bens<br>Adquiridos</td><td align='center'>Valor Total dos<br>Bens (R$)</td><td align='center'>Apresentação<br>dos Bens</td></tr><tr class='l1' align='right'><td>1981/<br>2021&nbsp;<br></td><td><b><span>62</span>&nbsp;&nbsp;</b></td><td><b>2.836.320,46&nbsp; </b></td><td align='center'><button class='bt1'>Mostrar<br>Todos</button></td></tr><tr align='right' class='l2'><td>1981&nbsp;&nbsp;</td><td><span>1</span>&nbsp;&nbsp;</td><td>780,00&nbsp;&nbsp;</td><td align='center'><button class='bt1'>Mostrar</button></td></tr><tr align='right' class='l1'><td>1986&nbsp;&nbsp;</td><td><span>1</span>&nbsp;&nbsp;</td><td>780,00&nbsp;&nbsp;</td><td align='center'><button class='bt1'>Mostrar</button></td></tr><tr align='right' class='l2'><td>1992&nbsp;&nbsp;</td><td><span >4</span>&nbsp;&nbsp;</td><td>1.147,50&nbsp;&nbsp;</td><td align='center'><button class='bt1'>Mostrar</button></td></tr><tr align='right' class='l1'><td>1994&nbsp;&nbsp;</td><td><span>2</span>&nbsp;&nbsp;</td><td>1.900,00&nbsp;&nbsp;</td><td align='center'><button class='bt1'>Mostrar</button></td></tr><tr align='right' class='l2'><td>1995&nbsp;&nbsp;</td><td><span>1</span>&nbsp;&nbsp;</td><td>1.850,00&nbsp;&nbsp;</td><td align='center'><button class='bt1'>Mostrar</button></td></tr><tr align='right' class='l1'><td>1996&nbsp;&nbsp;</td><td><span>9</span>&nbsp;&nbsp;</td><td>3.808,50&nbsp;&nbsp;</td><td align='center'><button class='bt1'>Mostrar</button></td></tr><tr align='right' class='l2'><td>1997&nbsp;&nbsp;</td><td><span>2</span>&nbsp;&nbsp;</td><td>3.280,00&nbsp;&nbsp;</td><td align='center'><button class='bt1'>Mostrar</button></td></tr><tr align='right' class='l1'><td>2001&nbsp;&nbsp;</td><td><span>1</span>&nbsp;&nbsp;</td><td>940,00&nbsp;&nbsp;</td><td align='center'><button class='bt1'>Mostrar</button></td></tr><tr align='right' class='l2'><td>2004&nbsp;&nbsp;</td><td><span >3</span>&nbsp;&nbsp;</td><td>38.820,00&nbsp;&nbsp;</td><td align='center'><button class='bt1'>Mostrar</button></td></tr><tr align='right' class='l1'><td>2008&nbsp;&nbsp;</td><td><span>4</span>&nbsp;&nbsp;</td><td>47.521,50&nbsp;&nbsp;</td><td align='center'><button class='bt1'>Mostrar</button></td></tr><tr align='right' class='l2'><td>2010&nbsp;&nbsp;</td><td><span>17</span>&nbsp;&nbsp;</td><td>1.170.136,72&nbsp;&nbsp;</td><td align='center'><button class='bt1'>Mostrar</button></td></tr><tr align='right' class='l1'><td>2012&nbsp;&nbsp;</td><td><span>7</span>&nbsp;&nbsp;</td><td>1.151.787,47&nbsp;&nbsp;</td><td align='center'><button class='bt1'>Mostrar</button></td></tr><tr align='right' class='l2'><td>2013&nbsp;&nbsp;</td><td><span>1</span>&nbsp;&nbsp;</td><td>483,03&nbsp;&nbsp;</td><td align='center'><button class='bt1'>Mostrar</button></td></tr><tr align='right' class='l1'><td>2015&nbsp;&nbsp;</td><td><span>1</span>&nbsp;&nbsp;</td><td>136.251,00&nbsp;&nbsp;</td><td align='center'><button class='bt1'>Mostrar</button></td></tr><tr align='right' class='l2'><td>2017&nbsp;&nbsp;</td><td><span>2</span>&nbsp;&nbsp;</td><td>272.502,00&nbsp;&nbsp;</td><td align='center'><button class='bt1'>Mostrar</button></td></tr><tr align='right' class='l1'><td>2018&nbsp;&nbsp;</td><td><span>2</span>&nbsp;&nbsp;</td><td>392,74&nbsp;&nbsp;</td><td align='center'><button class='bt1'>Mostrar</button></td></tr><tr align='right' class='l2'><td>2021&nbsp;&nbsp;</td><td><span>4</span>&nbsp;&nbsp;</td><td>3.940,00&nbsp;&nbsp;</td><td align='center'><button class='bt1'>Mostrar</button></td></tr></table>
+</tr></td></table>
+</div>
+<br><br>
+
+Em cada ano são mostrados os bens, a descrição e valor com mais detalhes.<br><br>
+Abaixo estão as formas de apresentação para análise do gestor.
+<br><br>
+<div style="background-color:051505;color:aaffcc;padding:20px">
+<dir><dir>
+<span class='reldettot'><dir><dir><span><b><u>Relações de Bens da Patribens por Classificação - Escolha</u></b>
+<br>
+<table style='position:relative;left:10px;top:7px;z-index:0;'>
+<tr class='l2'><td><b class="setab">&nbsp;>&nbsp;</b></td><td>&nbsp;&nbsp;Totais por Tipo do Bem dos Anos Indicados&nbsp;&nbsp;</td></tr>
+<tr class='l2'><td></td><td>&nbsp;&nbsp;Resumo de Bens Adquiridos&nbsp;&nbsp;</td></tr>
+<tr class='l1'><td></td><td>&nbsp;&nbsp;Por Data de Aquisição&nbsp;&nbsp;</td></tr>
+<tr class='l2'><td></td><td>&nbsp;&nbsp;Por Tipo de Bem&nbsp;&nbsp;</td></tr>
+<tr class='l2'><td></td><td>&nbsp;&nbsp;Fazer Seleção por Bem/Valor&nbsp;&nbsp;</td></tr></table>
+</dir></dir>
+</span>
+</div>
+<br><br>
+A primeira opção [<b>Totais por Tipo do Bem dos Anos Indicados</b>] mostra para cada ano escolhido o resumo com a quantidade e com valores relativos a cada tipo de bem segundo a classificação dos mesmos.
+<br>
+Ex:<br>
+2010
+<div style="background-color:051505;color:aaffcc;padding:20px">
+<dir><dir><dir><dir><dir><dir><dir>
+Ano - 2010    Bens: 17    Valor: R$1.170.136,72
+<table class="tbx">
+<tr class="l1"><td>Tipo do Bem</td><td>Quantidade<br>Total</td><td>Valor Total dos Bens<br>na Aquisição (R$)</td></tr>
+<tr class="l2"><td>&nbsp; VW	</td><td align='right'>2</td><td align='right'>89.160,00&nbsp;</td></tr>
+<tr class="l1"><td>&nbsp; GM	</td><td align='right'>3  </td><td align='right'>251.276,70&nbsp;</td></tr>
+<tr class="l2"><td>&nbsp; HONDA	</td><td align='right'>6  </td><td align='right'>552.897,90&nbsp;</td></tr>
+<tr class="l1"><td>&nbsp; CARRO PLATAFORMA </td><td align='right'>4 </td><td align='right'>1.932,12&nbsp;</td></tr>
+<tr class="l2"><td>&nbsp; MERCEDES BENZ </td><td td align='right'>2 </td><td  align='right'>274.870,00 &nbsp;</td></tr>
+</table>
+</dir></dir></dir></dir></dir></dir></dir>
+</div>
+<br><br>
+A cada linha mostra um tipo de bem, quantos deles foram adquiridos e o total dos valores daquele tipo de bem.
+<br><br>
+A segunda opção [<b>Resumo de Bens Adquiridos </b>] mostra para cada tipo de bem mostra os anos, a quantidade e o total dos valores em cada ano, segundo a classificação dos bens.
+<br>
+Ex:<br><br>
+<div style="background-color:051505;color:aaffcc;width:90%;padding:20px">
+<dir><dir><dir><dir>
+<table  class="tbx">
+<tr><td colspan=2>Tipo do Bem </td><td align='center'>&nbsp; Quantidade<br>Total</td><td align='center'>Valor Total dos Bens<br>na Aquisição (R$) </td></tr>
+<tr class="l1"><td width=300 colspan=2> MERCEDES BENZ  </td><td align='right'>6&nbsp; &nbsp; &nbsp;</td><td align='right'>	945.009,00&nbsp; &nbsp; </td></tr>
+<tr align='right'><td></td><td colspan=3>
+<div class='tbd1'><div class='c85' align='center'> A N O&nbsp;&nbsp;</div><div class='c85'>Qtd. no Ano&nbsp;&nbsp;</div><div class='c140' align='right'>Valor no Ano(R$)&nbsp;&nbsp;</div></div>
+<div class='tbd2'><div class='c85' align='center'> 2010&nbsp; &nbsp;</div><div class='c85'> 2&nbsp; &nbsp; &nbsp;</div><div class='c140' align='right'> 274.870,00&nbsp; &nbsp; </div></div>
+<div class='tbd1'><div class='c85' align='center'> 2012&nbsp; &nbsp;</div><div class='c85'> 4&nbsp; &nbsp; &nbsp;</div><div class='c140' align='right'> 670.139,00&nbsp; &nbsp; </div></div>
+</td></tr>
+</table>
+</td></tr>
+</table>
+</dir></dir></dir></dir>
+</div>
+<br><br>
+A terceira opção [<b>Por Data de Aquisição</b>] mostra cada bem, o mês e ano de aquisição, seu valor e o número de tombo no patrimônio. Ao passar o mouse sobre cada tipo de bem será mostrada em uma legenda no local a descrição do bem que foi registrada.
+<br>
+Ex:
+<br><br>
+<div style="background-color:051505;color:aaffcc;width:90%;padding:20px">
+<dir><dir><dir>
+Ano - 2012    Bens: 7    Valor: R$1.151.787,47
+<table class="tbx">
+<tr><td>Data<br> Aquisição&nbsp;&nbsp;</td><td width=180>Tipo do Bem	</td><td>&nbsp;&nbsp;Tombo&nbsp;&nbsp;</td><!--td> Marcação	</td--><td>Valor na Data de <br>Aquisição (R$)  </td></tr>
+<tr class="l1"><td>  05/2012</td><td width=500 title="MODELO HILUX 4X4 CAMBIO MANUAL A/C DIR. ELETRICA">  TOYOTA</td><td>&nbsp;&nbsp;42015  </td><!--td align="center"> <input type='checkbox'> </td--><td>&nbsp;&nbsp;160.549,49  </td></tr>
+<tr class="l2"><td>  05/2012</td><td title="MODELO HILUX 4X4 CAMBIO MANUAL A/C DIR. ELETRICA">  TOYOTA</td><td>&nbsp;&nbsp;42016  </td><!--td align="center"> <input type='checkbox'> </td--><td>&nbsp;&nbsp;160.549,49  </td></tr>
+<tr class="l1"><td>  05/2012</td><td title="MODELO HILUX 4X4 CAMBIO MANUAL A/C DIR. ELETRICA">  TOYOTA</td><td>&nbsp;&nbsp;42017  </td><!--td align="center"> <input type='checkbox'> </td--><td>&nbsp;&nbsp;160.549,49  </td></tr>
+<tr class="l2"><td>  10/2012</td><td title="MODELO SPRINTER COM CAPACIDADE PARA 24 PESSOAS A/C">  MERCEDES BENZ</td><td>&nbsp;&nbsp;43027 </td><!--td align="center"> <input type='checkbox'> </td--><td>&nbsp;&nbsp;177.568,00  </td></tr>
+<tr class="l1"><td>  10/2012</td><td title="MODELO SPRINTER COM CAPACIDADE PARA 24 PESSOAS A/C">  MERCEDES BENZ</td><td>&nbsp;&nbsp;43028 </td><!--td align="center"> <input type='checkbox'> </td--><td>&nbsp;&nbsp;177.568,00  </td></tr>
+<tr class="l2"><td>  10/2012</td><td title="MODELO SPRINTER COM CAPACIDADE PARA 24 PESSOAS A/C">  MERCEDES BENZ</td><td>&nbsp;&nbsp;43029 </td><!--td align="center"> <input type='checkbox'> </td--><td>&nbsp;&nbsp;177.568,00  </td></tr>
+<tr class="l1"><td>  10/2012</td><td title="MODELO CLASSE C350 A/C DIR. ELETRICA CAMBIO AUTOMATICO BC COURO">  MERCEDES BENZ</td><td>&nbsp;&nbsp;43030 </td><!--td align="center"> <input type='checkbox'> </td--><td>&nbsp;&nbsp;137.435,00  </td></tr>
+</table>
+</dir></dir>
+</div>
+<br><br>
+A quarta opção [<b>Por Tipo de Bem</b>] apresenta uma lista mostrando cada tipo onde cada bem é descrito mostrando alguns de seus dados.<br>
+Ex:<br><br>
+<br><br>
+<div style="background-color:051505;color:aaffcc;width:90%;padding:20px">
+<dir><dir><dir>
+
+<table class="tbx"><tbody><tr class="nrel valign=" top'=""><td width="85">&nbsp;&nbsp;Data de<br>&nbsp;&nbsp;Aquisição&nbsp;&nbsp;</td><td width="70"><br>&nbsp;&nbsp;Tombo&nbsp;&nbsp;</td><td width="500">&nbsp;&nbsp;[<span class="l1">HONDA</span>]<br>&nbsp;&nbsp;Descrição</td><td width="85" align="center">Valor (R$)</td></tr><tr class="xtbdb1a" valign="top"><td>&nbsp;&nbsp;05/2010&nbsp;&nbsp;</td><td align="right">39057&nbsp;&nbsp;</td><td style="margin:auto;width:90%"><div style="width:95%;margin:auto;">MODELO CR-V 4X4 A/C DIR. ELETRICA CAMBIO MANUAL</div></td><td align="right">&nbsp;&nbsp;92.149,65&nbsp;&nbsp;</td></tr><tr class="xtbdb1" valign="top"><td>&nbsp;&nbsp;05/2010&nbsp;&nbsp;</td><td align="right">39058&nbsp;&nbsp;</td><td style="margin:auto;width:90%"><div style="width:95%;margin:auto;">MODELO CR-V 4X4 A/C DIR. ELETRICA CAMBIO MANUAL</div></td><td align="right">&nbsp;&nbsp;92.149,65&nbsp;&nbsp;</td></tr><tr class="xtbdb1" valign="top"><td>&nbsp;&nbsp;05/2010&nbsp;&nbsp;</td><td align="right">39059&nbsp;&nbsp;</td><td style="margin:auto;width:90%"><div style="width:95%;margin:auto;">MODELO CR-V 4X4 A/C DIR. ELETRICA CAMBIO MANUAL</div></td><td align="right">&nbsp;&nbsp;92.149,65&nbsp;&nbsp;</td></tr><tr class="xtbdb1" valign="top"><td>&nbsp;&nbsp;06/2010&nbsp;&nbsp;</td><td align="right">40038&nbsp;&nbsp;</td><td style="margin:auto;width:90%"><div style="width:95%;margin:auto;">MODELO CR-V 4X4 A/C DIR. ELETRICA CAMBIO MANUAL</div></td><td align="right">&nbsp;&nbsp;92.149,65&nbsp;&nbsp;</td></tr><tr class="xtbdb1" valign="top"><td>&nbsp;&nbsp;11/2010&nbsp;&nbsp;</td><td align="right">40105&nbsp;&nbsp;</td><td style="margin:auto;width:90%"><div style="width:95%;margin:auto;">MODELO CR-V 4X4 A/C DIR. ELETRICA CAMBIO MANUAL</div></td><td align="right">&nbsp;&nbsp;92.149,65&nbsp;&nbsp;</td></tr><tr class="xtbdb1" valign="top"><td>&nbsp;&nbsp;11/2010&nbsp;&nbsp;</td><td align="right">40106&nbsp;&nbsp;</td><td style="margin:auto;width:90%"><div style="width:95%;margin:auto;">MODELO CR-V 4X4 A/C DIR. ELETRICA CAMBIO MANUAL</div></td><td align="right">&nbsp;&nbsp;92.149,65&nbsp;&nbsp;</td></tr></tbody></table>
+
+</dir></dir></dir>
+</div>
+<br><br>
+A &uacute;ltima opção [<b>Fazer Seleção por Bem/Valor</b>] destas é um filtro de dados para consultas mais específicas. Com este modo ativo são apresentados apenas os dados selecionados por tipo ou valor nos mesmos formatos apresentados anteriormente. Enquanto o filtro dos dados estiver modo ativo a apresentação no menu será destacada.
+<br><br>
+<div style="background-color:051505;color:aaffcc;width:90%;padding:20px">
+<b>---Critérios de Seleção---</b><br><table class='tbx'><tr><td>
+<b>-Lista de Bens</b> &nbsp; &nbsp; &nbsp; &nbsp; <input type='checkbox'>Marcar Todos /<input type='checkbox'>Desmarcar Todos<br><br><table class='tbx'><tr class='l1'><td width=270><input type='checkbox' checked> BICICLETA</td><td width=270><input type='checkbox' checked> CARRO DE MAO</td><td width=270><input type='checkbox' checked> CARROCA REBOCAVEL</td></tr><tr class='l2'><td width=270><input type='checkbox' checked> CARRO PLATAFORMA</td><td width=270><input type='checkbox' checked> MOTORCICLETA</td><td width=270><input type='checkbox' checked> VW</td></tr><tr class='l1'><td width=270><input type='checkbox' checked> GM</td><td width=270><input type='checkbox' checked> HONDA</td><td width=270><input type='checkbox' checked> MERCEDES BENZ</td></tr><tr class='l2'><td width=270><input type='checkbox' checked> TOYOTA</td></tr></table>
+<br><br>
+<table><tr valign='top'><td>
+<span class='l2'><b>-Valores</b> </span><br><br><table class='tbx'><tr class='l1'><td colspan=2><input type='radio'>Independente de valor do bem&nbsp;</td></tr><tr class='l2'><td><input type='radio'>Iguais a&nbsp;&nbsp;</td><td>&nbsp;R$<input type='text' size=7 class='nument'></td></tr><tr class='l1'><td><input type='radio'>Até&nbsp;&nbsp;</td><td>&nbsp;R$<input type='text' size=7 class='nument'></td></tr><tr class='l2'><td><input type='radio' >A partir de&nbsp;&nbsp;</td><td>&nbsp;R$<input type='text' size=7 class='nument'></td></tr><tr class='l1'><td><input type='radio'>Entre </td><td>&nbsp;R$<input type='text' size=7 class='nument'> e R$<input type='text' size=7 class='nument'></td></tr></table><input type='hidden' id='valh'>
+</td><td>&nbsp;&nbsp;&nbsp;</td><td>
+<span class='l2'>-Escreva os números dos <b>Tombos</b> a serem<br>considerados, separados por vírgulas.</span><br><br><textarea id='ntombos' rows=5 cols=30 style='color:ddffee;background-color:338844;'></textarea>
+</td></tr></table><p align='right'><button>Limpar Seleção</button>&nbsp;&nbsp;&nbsp;<button onClick='execsel();'>Executar</button></p>
+</td></tr></table>
+</div>
+<br><br>
+
+Também poderão ser vistas outras informações sobre cada bem, sua aquisição e localização dos bens, como uma ficha. Poderá ser vista pelas telas de consulta onde estão apresentados os Números de Tombos dos bens. Ao se clicar em cada um será mostrada uma janela com uma ficha relacionada ao bem. Esta função não está tão indicativa por poder ser apresentada num treinamento e não ser necessária campos com a indicação da mesma em cada linha, evitando assim que a tela seja mais carregada de informações.
+<br><br>
+<div style="background-color:051505;color:aaffcc;width:90%;padding:20px">
+<dir><dir><dir>
+<div id="telaob1" style="background-color:ffffbb;color:336644;border:5px solid;border-color:559988;padding:10px;opacity:1;text-shadow:0 0 #000000;width:500px;max-width:600px;">
+<dir><u><b>Dados Relativos ao Bem [42015]</b></u></dir>
+Nome: <x>TOYOTA</x><p style='text-indent:-70px;margin-left:70px;margin-top:0;margin-bottom:0;'>Descrição: <x>MODELO HILUX 4X4 CAMBIO MANUAL A/C DIR. ELETRICA</x></p>
+"Valor: <x>R$160.549,49</x><br>Data de Aquisição: <x>08/05/2012</x><br>Número do Processo: <x> 2012/0508160549.49</x><br>Número do Empenho: <x>01242015/2012</x><br>Documento: <x>3542015-2012</x>
+<hr width=70%><dir><u><b>Dados do Fornecedor</b></u></dir>CPF/CNPJ: <x>002701230027/0001</x>
+<p style='text-indent:-70px;margin-left:70px;margin-top:0;margin-bottom:0;'>Nome: <x>TOYOTA Veiculos S/A</x></p><p style='text-indent:-70px;margin-left:70px;margin-top:0;margin-bottom:0;'>Endereço: <x>Av Rui Barbosa, 0027 - São José</x></p>
+CEP: <x>50123-456</x><br>Cidade: <x>Recife</x> Estado: <x>Pernambuco</x><br><br>
+<hr width=70%><dir><u><b>Localização/Unidade</b></u></dir><x>Setor de Transporte</x>
+<br><p align='right'><button onClick='tf=0;tiratela();'>Ocultar</button></p>
+
+</div>
+</dir>
+</div>
+</dir></dir></dir>
+<!-- Apresentação -->
+<!-- Apresentação -->
+<!-- Apresentação -->
+</dir></dir>
+<div id="sistpatri" style="display:none">
+<table class="tbcab" width="100%"><tbody><tr valign="top"><td width="90"><!--img src="img/logo.jpg" width="85"--><table class="tbx"><tr><td rowspan=3 bgcolor="aaeeaa">&nbsp;&nbsp;&nbsp;</td><td rowspan=2><br><hr width=50% align="right" style="border-color:aaeeaa;border-style:groove;border-width:4px">ogo<b style="font-size:18px"><i>M</i></b>arca</td></tr><tr></tr><tr><td bgcolor="aaeeaa"><br></td></tr></table></td><td valign="bottom"><b>Patribens - Empreendimentos Prediais</b><br>Diretoria de Planejamento e Administração<br>Divisão de Manutenção Predial e Gestão do Patrimônio <br>
+<b>Sistema de Consultas de Bens da Patribens</b> <!--span onClick="cores();">*****</span-->
+</td></tr>
+</tbody></table>
+<hr>
+<br>
+<div id="tabsiafi">
+<!--u>Selecione uma Conta para Consultar. Clique em <font class='tvd'>&nbsp;o&nbsp;</font> para selecionar.</u><br><br-->
+<u>Selecione uma Conta para Consultar. Clique em <b class="setab">&nbsp;>&nbsp;</b><!--img src="img/tdir.png" width="15"--> para selecionar.</u><br><br>
+<table><tbody><tr><td valign="top"><table><tbody><tr valign="middle"><td><span onclick="mostrasiafi(55/0400,'APARELHOS DE MEDICAO E ORIENTACAO');"><b class="setab">&nbsp;>&nbsp;</b>&nbsp;55/0400  APARELHOS DE MEDICAO E ORIENTACAO </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/1200,'APARELHOS E UTENSILIOS DOMESTICOS');"><b class="setab">&nbsp;>&nbsp;</b>&nbsp;55/1200  APARELHOS E UTENSILIOS DOMESTICOS </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/2400,'EQUIPAMENTO DE PROTECAO, SEGURANCA E SOCORRO');"><b class="setab">&nbsp;>&nbsp;</b>&nbsp;55/2400  EQUIPAMENTO DE PROTECAO, SEGURANCA E SOCORRO </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/3200,'MAQUINAS E EQUIPAMENTOS GRAFICOS');"><b class="setab">&nbsp;>&nbsp;</b>&nbsp;55/3200  MAQUINAS E EQUIPAMENTOS GRAFICOS </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/3400,'MAQUINAS, UTENSILIOS E EQUIPAMENTOS DIVERSOS');"><b class="setab">&nbsp;>&nbsp;</b>&nbsp;55/3400  MAQUINAS, UTENSILIOS E EQUIPAMENTOS DIVERSOS </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/3600,'MAQUINAS, INSTALACOES E UTENS. DE ESCRITORIO');"><b class="setab">&nbsp;>&nbsp;</b>&nbsp;55/3600  MAQUINAS, INSTALACOES E UTENS. DE ESCRITORIO </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/3900,'EQUIPAMENTOS HIDRAULICOS E ELETRICOS');"><b class="setab">&nbsp;>&nbsp;</b>&nbsp;55/3900  EQUIPAMENTOS HIDRAULICOS E ELETRICOS </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/4200,'MOBILIARIO EM GERAL');"><b class="setab">&nbsp;>&nbsp;</b>&nbsp;55/4200  MOBILIARIO EM GERAL </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/4800,'VEICULOS DIVERSOS');"><b class="setab">&nbsp;>&nbsp;</b>&nbsp;55/4800  VEICULOS DIVERSOS </span></td></tr></tbody></table></td><td valign="top">
+<table><tbody><tr valign="middle"><td><span onclick="mostrasiafi(55/0600,'APARELHOS E EQUIPAMENTOS DE COMUNICACAO');"><b class="setab">&nbsp;>&nbsp;</b>&nbsp;55/0600  APARELHOS E EQUIPAMENTOS DE COMUNICACAO </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/1000,'APARELHOS E EQUIPAMENTOS P/ ESPORTES E DIVERSOES');"><b class="setab">&nbsp;>&nbsp;</b>&nbsp;55/1000  APARELHOS E EQUIPAMENTOS P/ ESPORTES E DIVERSOES </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/1800,'COLECOES E MATERIAIS BIBLIOGRAFICOS');"><b class="setab">&nbsp;>&nbsp;</b>&nbsp;55/1800  COLECOES E MATERIAIS BIBLIOGRAFICOS </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/3000,'MAQUINAS E EQUIPAMENTOS ENERGETICOS');"><b class="setab">&nbsp;>&nbsp;</b>&nbsp;55/3000  MAQUINAS E EQUIPAMENTOS ENERGETICOS </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/3300,'EQUIPAMENTOS PARA AUDIO, VIDEO E FOTO');"><b class="setab">&nbsp;>&nbsp;</b>&nbsp;55/3300  EQUIPAMENTOS PARA AUDIO, VIDEO E FOTO </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/3500,'EQUIPAMENTOS DE PROCESSAMENTOS DE DADOS');"><b class="setab">&nbsp;>&nbsp;</b>&nbsp;55/3500  EQUIPAMENTOS DE PROCESSAMENTOS DE DADOS </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/3800,'MAQUINAS, FERRAMENTAS E UTENSILIOS DE OFICINA');"><b class="setab">&nbsp;>&nbsp;</b>&nbsp;55/3800  MAQUINAS, FERRAMENTAS E UTENSILIOS DE OFICINA </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/4000,'MAQUINAS E EQUIPAMENTOS AGRIC. E RODOVIARIOS');"><b class="setab">&nbsp;>&nbsp;</b>&nbsp;55/4000  MAQUINAS E EQUIPAMENTOS AGRIC. E RODOVIARIOS </span></td></tr><tr valign="middle"><td><span onclick="mostrasiafi(55/4400,'OBRAS DE ARTES E PECAS PARA EXPOSICAO');"><b class="setab">&nbsp;>&nbsp;</b>&nbsp;55/4400  OBRAS DE ARTES E PECAS PARA EXPOSICAO </span></td></tr></tbody></table></td></tr></tbody></table>
+</div>
+<div id="lisanos">
+</div>
+<div id="telaob1" style="position:fixed;left:450px;top:150px;display:none;background-color:ffffbb;color:336644;border:5px solid;border-color:559988;padding:10px;opacity:1;text-shadow:0 0 #000000;width:500px;max-width:600px;" onmouseover="tf=1;" onmouseout="tf=0;">
+ <div id="natela1"></div>
+</div>
+<div id="telaob2" style="position:absolute;left:150px;top:75px;display:none;background-color:ffffbb;color:336644;border:5px solid;border-color:559988;padding:10px;opacity:1;text-shadow:0 0 #000000;width:1100px;max-width:1100px;" ;"="" onmouseover="tl=1;" onmouseout="tl=0;">
+ <div id="natela2"></div>
+</div>
+<div id="mccx" style="position:absolute;top:200px;left:950px;display:none;">
+<table class="tbx"><tbody><tr><td><font style="color:#888888;" size="5">Lidos: <span id="vccx"></span>%</font></td></tr></tbody></table></div>
+<br><br><br><br>
+<input type="hidden" id="selhd" value="">
+<div id="implin" style="position:absolute;top:200px;left:950px;display:none;">
+<table class="tbx"><tbody><tr><td><font style="color:#888888;" size="2">Tamanho da página: <span id="tamimp"></span><br>Largura da página: <span id="lgimp"></span><br><span id="nits"></span></font></td></tr></tbody></table></div>
+<div id="impp" style="position:absolute;left:350px;top:100px;color:#ddffee;background-color:#225533;z-index:3;visibility:hidden;padding:0px;width:700px;max-width:700px;">*********</div>
+<div id="fimpp" style="position:absolute;left:0px;top:5px;visibility:hidden;padding:10px;width:700px;max-width:600px;"><table style="font-family:Arial;font-size:11px;background-color:#ffddaa;page-break-after:always;" width="600" border="1"><tbody><tr><td align="right">Página - <span id="numpag"></span></td></tr></tbody></table></div>
+<!--textarea id="tarea" cols=180 rows=30></textarea-->
+</div>
+</body></html>
