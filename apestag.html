@@ -3762,7 +3762,7 @@ E finalmente de maneira simples e intuitiva, mas que deve ser comentada aqui, os
 	 <td width=160>Diretoria:</td><td><input type="text" size=80 id="indir" onChange="atmem(2);"></td>
 	</tr>
 	<tr>
-	 <td width=160>C&oacute;digo Inst. de Ensino:</td><td><input type="text" size=2 style="text-align:right" id="icdinst" onFocus="cdx=this.id;" xonBlur="buscainst(this.value);" onKeyUp="tecinst();" onChange="buscainst(this.value);atmem(3);"> <img src='chave.png' onClick='buscainst(document.getElementById(cdx).value);' width=20> <img src="lupabusca.png" onClick="buscalinst();" width=20></td>
+	 <td width=160>C&oacute;digo Inst. de Ensino:</td><td><input type="text" size=2 style="text-align:right" id="icdinst" onFocus="cdx=this.id;" xonBlur="buscainst(this.value);" onKeyUp="tecinst();" onChange="buscainst(this.value);atmem(3);"> <!--img src='chave.png'--><button class="btim1" onClick='buscainst(document.getElementById(cdx).value);'><span class="im"><span class="ch1">F</span><span class="ch2">@</span></span></button> <!--img src="lupabusca.png"--><button class="btim2" onClick="buscalinst();"><span class="lp1">O</span><span class="lp2">Y</span></span></button></td>
 	</tr>
 	<tr>
 	 <td width=160>Institui&ccedil;&atilde;o de Ensino:</td><td><input type="text" size=80 id="ininst" onChange="atmem(4);"></td>
@@ -3862,8 +3862,8 @@ E finalmente de maneira simples e intuitiva, mas que deve ser comentada aqui, os
      <tr valign="bottom">
       <td width=120>C&oacute;digo:</td>
       <td valign="top" width=180 ><input type="text" size=2 style="text-align:right" id="iinstcdg" onKeyDown="tecinst();"><input type="hidden" id="iinstant">
-      <img src="chave.png" onClick="buscainst(document.getElementById('iinstcdg').value);" width=20>
-      <img src="lupabusca.png" onClick="buscalinst();" width=20></td>
+      <!--img src="chave.png"--><button class="btim1" onClick="buscainst(document.getElementById('iinstcdg').value);"><span class="im"><span class="ch1">F</span><span class="ch2">@</span></span></button>
+      <!--img src="lupabusca.png"--><button class="btim2" onClick="buscalinst();"><span class="im"><span class="lp1">O</span><span class="lp2">Y</span></span></button></td>
  	</tr>
 	<tr>
 	  <td>Nome da Institui&ccedil;&atilde;o:</td>
