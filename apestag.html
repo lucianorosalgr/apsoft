@@ -1705,7 +1705,7 @@ function buscalest(){
 	dirnop = "";
 	dircop = "";
 	niveisx = "<table style='height:30px;' xclass='tbb'><tr valign='top'><td><input type='checkbox' onClick='opnivel(1);' id='nvck1'>Superior&nbsp;&nbsp;<input type='checkbox' onClick='opnivel(2);' id='nvck2'>M&eacute;dio&nbsp;&nbsp;<input type='checkbox' onClick='opnivel(3);' id='nvck3'>T&eacute;cnico</td></tr></table>";
-	institx =  "<table width='100%' xclass='tbb'><tr valign='bottom'><td width=30>C&oacute;digo:</td><td valign='top'><input type='text' size=2 style='text-align:right' id='iinstcdgop' onKeyDown='cdx=this.id;tecinst();'> <img src='chave.png' onClick='buscainst(document.getElementById(\"iinstcdgop\").value);' width=20> <img src='lupabusca.png' onClick='buscalinst();' width=20></td></tr><tr><td width=100>Institui&ccedil;&atilde;o:</td><td><input type='text' size=80 id='iinstnomeop'></td></tr></table>";
+	institx =  "<table width='100%' xclass='tbb'><tr valign='bottom'><td width=30>C&oacute;digo:</td><td valign='top'><input type='text' size=2 style='text-align:right' id='iinstcdgop' onKeyDown='cdx=this.id;tecinst();'> <!--img src='chave.png'--><button class='btim1' onClick='buscainst(document.getElementById(\"iinstcdgop\").value);'><span class='im'><span class='ch1'>F</span><span class='ch2'>@</span></span></button> <!--img src='lupabusca.png'--><button class='btim2' onClick='buscalinst();'><span class='im'><span class='lp1'>O</span><span class='lp2'>Y</span></span></button></td></tr><tr><td width=100>Institui&ccedil;&atilde;o:</td><td><input type='text' size=80 id='iinstnomeop'></td></tr></table>";
 	diretx =  "<table width='100%' xclass='tbb'><tr valign='bottom'><td width=30>C&oacute;digo:</td><td valign='top'><input type='text' size=2 style='text-align:right' id='idircdgop' onKeyDown='cdx=this.id;tecdir();'> <img src='chave.png' onClick='buscadir(document.getElementById(\"idircdgop\").value);' width=20> <img src='lupabusca.png' onClick='buscaldir();' width=20></td></tr><tr><td width=100>Diretoria:</td><td><input type='text' size=80 id='idirnomeop'></td></tr></table>";
 	periodox = "<table xclass='tbb' xborder=1 height=60 width=430><tr valign='middle'><td width=200><table><tr><td><input type='radio' name='rdopp' onClick='periodo(0);' id='opdt1'>Data Atual</td><td><input type='radio' name='rdopp' onClick='periodo(1);' id='opdt2'>Uma Data</td></tr><tr><td><input type='radio' name='rdopp' onClick='periodo(2);' id='opdt3''>Um Per&iacute;odo</td><td><input type='radio' name='rdopp' onClick='periodo(3);' id='opdt4'>Todos</td></tr></table></td><td> <span id='opperiodo'></span></td></tr></table>";
 	mops = 0;
@@ -3907,8 +3907,8 @@ E finalmente de maneira simples e intuitiva, mas que deve ser comentada aqui, os
      <tr valign="bottom">
       <td width=30>C&oacute;digo:</td>
       <td valign="top" width=180 ><input type="text" size=2 style="text-align:right" id="idircdg" onKeyDown="tecdir();"><input type="hidden" id="idirant">
-      <img src="chave.png" onClick="buscadir(document.getElementById('idircdg').value);" width=20>
-      <img src="lupabusca.png" onClick="buscaldir();" width=20></td>
+      <!--img src="chave.png"--><button class="btim1" onClick="buscadir(document.getElementById('idircdg').value);"><span class="im"><span class="ch1">F</span><span class="ch2">@</span></span></button>
+      <!--img src="lupabusca.png"--><button class="btim2" onClick="buscaldir();"><span class="im"><span class="lp1">O</span><span class="lp2">Y</span></span></button></td>
  	</tr>
 	<tr>
 	  <td width=100>Diretoria:</td>
